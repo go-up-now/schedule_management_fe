@@ -1,7 +1,7 @@
 function Navbar() {
   return (
-    <div>
-      <div className="pt-0 pr-0 pb-0 pl-0 mt-0 mr-0 mb-0 ml-0"></div>
+    <div className="sticky top-0 left-0 w-full bg-white z-40">
+      <div className="pt-0 pr-0 pb-0 pl-0 mt-0 mr-0 mb-0 ml-0 "></div>
       <div className="bg-white">
         <div className="flex-col flex">
           <div className="w-full border-b-2 border-gray-200">
@@ -63,7 +63,8 @@ function Navbar() {
             </div>
           </div>
         </div>
-      </div></div>
+      </div>
+    </div>
   );
 }
 

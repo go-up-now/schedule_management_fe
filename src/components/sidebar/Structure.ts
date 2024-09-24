@@ -1,15 +1,15 @@
 const sidebarStructure = [
     {
         id: "dashboard",
-        title: "Dasbor",
-        name: "dasbor",
+        title: "Dashboard",
+        name: "Dashboard",
         parent: true,
         icon: "dasbor",
         link: "/"
     },
     {
         id: "list",
-        title: "Quản lý",
+        title: "Quản lý người dùng",
         name: "list",
         parent: true,
         icon: "list",
@@ -19,22 +19,7 @@ const sidebarStructure = [
                 title: "Sinh viên",
                 name: "list.student",
                 icon: "student",
-                child: [
-                    {
-                        id: "alamat-pengiriman",
-                        title: "Alamat Pengiriman",
-                        name: "list.student.pengiriman",
-                        link: "/student/shipping",
-                        icon: "dot"
-                    },
-                    {
-                        id: "alamat-tagihan",
-                        title: "Alamat Tagihan",
-                        name: "list.student.tagihan",
-                        link: "/student/billing",
-                        icon: "dot"
-                    }
-                ]
+                link: "/sinh-vien"
             },
             {
                 id: "instructor",

@@ -341,7 +341,7 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
       role="navigation"
       className={[
         "bg-slate-50 border-r border-slate-100 shadow-sm absolute inset-y-0 left-0",
-        "duration-300 ease-in-out md:fixed md:translate-x-0",
+        "duration-300 ease-in-out md:fixed md:translate-x-0 z-50",
         `${isExpand
           ? "bg-slate-50 w-72"
           : isExpandOnHover
@@ -351,7 +351,7 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
       ].join(" ")}
     >
       <button
-        className="absolute z-50 top-8 -right-3 bg-white hover:bg-slate-100 text-slate-500 p-1.5 rounded-full border border-slate-200"
+        className="absolute z-50 bottom-8 -right-3 bg-white hover:bg-slate-100 text-slate-500 p-1.5 rounded-full border border-slate-200"
         onClick={() => {
           setIsExpand(!isExpand);
           setExpand(!isExpand);
