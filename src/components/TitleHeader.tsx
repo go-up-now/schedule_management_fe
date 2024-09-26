@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function TitleHeader(
-    { title, titleClassName = "text-[1.25rem] font-medium mt-2", className, disableIcon = false }: Props
+    { title, titleClassName = "text-[1.25rem] font-medium", className, disableIcon = false }: Props
 ) {
     return (
         <div className={"flex justify-between items-center w-full" + className}>

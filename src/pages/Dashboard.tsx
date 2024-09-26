@@ -1,5 +1,5 @@
-import InputColor from "../components/inputs/InputColor.js";
-import TableIndex from "../components/tables/TableIndex.js";
+import InputColor from "../components/inputs/InputColor.tsx";
+// import TableIndex from "../components/tables/TableIndex.js";
 import Tables from "../components/tables/Tables.tsx";
 import SelectBox from "../components/SelectBox.tsx";
 import React from "react";

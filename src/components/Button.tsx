@@ -11,7 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
   ref?: React.RefObject<HTMLButtonElement>;
-  disable?: boolean;
+  disabled?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -26,9 +26,9 @@ const Button: React.FC<ButtonProps> = ({
       disabled={props.disabled}
       data-modal-hide={props.hiddenParent}
       type={`${props.type ? props.type : "button"}`}
-      className={`${props.variant = variantClass} 
+      className={`hover:opacity-75 ${props.variant = variantClass} 
       ${props.size ? props.size : "text-xs py-1.5 px-4   sm:py-2 sm:px-4 sm:text-xs     md:py-2 md:px-6 md:text-base    lg:py-2 lg:px-8"} 
-      text-white text-nowrap  relative inline-flex items-center justify-center text-center no-underline  align-middle ${props.disabled ? 'cursor-not-allowed ' : 'cursor-pointer'} select-none rounded-md  ${props.className}`}
+      text-white text-nowrap  relative inline-flex items-center justify-center text-center no-underline  align-middle ${props.disabled ? 'cursor-not-allowed bg-gray-400' : 'cursor-pointer'} select-none rounded-md  ${props.className}`}
       onClick={props.onClick}
       onMouseLeave={props.onMouseLeave}
       onMouseEnter={props.onMouseEnter}

@@ -9,6 +9,7 @@ import { faEllipsis, faFile, faFileExport, faPlus, faUserCheck, faUserGroup, faU
 import { FetchAll } from "../services/StudentService.js";
 import useHoverModal from "../hooks/useHoverModal.ts";
 import Popover from "../components/Popover.tsx";
+import Container from "../components/Container.tsx"
 
 interface User {
     id: number;
@@ -53,10 +54,10 @@ const StudentManagePage = () => {
     const renderRow = (item: Student) => [
         // <th key={`item-id-${item.id}`} className="px-6 py-4">{item.id}</th>,
         <td key={`item-code-${item.id}`} className="px-6 py-4">{item.user.code}</td>,
-        <td key={`item-last-name-${item.id}`} className="px-6 py-4">{item.user.lastName + ' ' + item.user.firstName}</td>,
-        <td key={`item-specialization_count-${item.id}`} className="px-6 py-4">{item.user.gender ? "Nam" : "Nữ"}</td>,
-        <td key={`item-subject_count-${item.id}`} className="px-6 py-4">{item.user.birthday}</td>,
-        <td key={`item-activity_mark-${item.id}`} className={`px-6 py-4 font-bold ${item.user.status ? "text-green-400" : "text-red-500"}`}>
+        <td key={`item-name-${item.id}`} className="px-6 py-4">{item.user.lastName + ' ' + item.user.firstName}</td>,
+        <td key={`item-gender-${item.id}`} className="px-6 py-4">{item.user.gender ? "Nam" : "Nữ"}</td>,
+        <td key={`item-birthday-${item.id}`} className="px-6 py-4">{item.user.birthday}</td>,
+        <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${item.user.status ? "text-green-400" : "text-red-500"}`}>
             {item.user.status ? "Hoạt động" : "Không hoạt động"}</td>,
         <td key={`item-${item.id}`} className="px-6 py-4 text-center">
 
@@ -116,7 +117,7 @@ const StudentManagePage = () => {
     }
 
     return (
-        <>
+        <Container>
             <TitleHeader title="QUẢN LÝ SINH VIÊN" />
             <div className="w-full flex flex-wrap md:flex-nowrap py-3 gap-3">
                 <CardBox icon={faUserGroup} title="Tổng số sinh viên" count={listStudent.length} />
@@ -125,7 +126,7 @@ const StudentManagePage = () => {
             </div>
 
             <div className="w-full bg-white p-4 shadow-md rounded-2xl">
-                <div className="">
+                <div>
                     <p className="text-[#9A9A9A] text-xs self-center mr-3 pb-2">Số lượng: <strong>30</strong></p>
                     <div className="flex flex-wrap gap-2">
                         <div className="columns-1">
@@ -184,9 +185,6 @@ const StudentManagePage = () => {
                             </Button>
                         </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-
-                    </div>
                 </div>
 
                 <div className="pt-8 overflow-x-auto">
@@ -198,7 +196,7 @@ const StudentManagePage = () => {
                 </div>
 
             </div>
-        </>
+        </Container>
     );
 }
 

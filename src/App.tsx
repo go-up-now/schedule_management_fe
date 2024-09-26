@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import './style.css';
 import Sidebar from "./components/sidebar/Sidebar.tsx";
-import Navbar from './components/sidebar/Navbar.js';
+import Navbar from './components/sidebar/Navbar.jsx';
 import { BrowserRouter } from "react-router-dom";
-import AppRouters from "./router/AppRouter.js";
+import AppRouters from "./router/AppRouter.jsx";
 
 function App() {
   const [sideMenuIsExpand, setSideMenuIsExpand] = useState(true);
@@ -19,7 +18,10 @@ function App() {
             }`}
         >
           <Navbar />
-          <AppRouters />
+          <div className="ms-2">
+            <AppRouters />
+
+          </div>
         </div>
       </div>
     </BrowserRouter>

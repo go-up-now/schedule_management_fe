@@ -31,9 +31,9 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
-      <div className={`bg-white rounded-lg shadow-lg p-2 relative z-50 w-full ${width} d:h-auto ${isOpen ? 'animate-slide-up' : 'animate-slide-down'}`} id={id}>
+      <div className={`bg-white rounded-lg shadow-lg p-2 relative z-50 w-10/12 ${width} d:h-auto ${isOpen ? 'animate-slide-up' : 'animate-slide-down'}`} id={id}>
         <div className="flex justify-center rounded-t ">
-          {!iconPopup ? <h3 className="p-2 text-xl font-semibold text-gray-900 ">
+          {!iconPopup ? <h3 className="p-2 text-xl font-semibold text-gray-900 mb-3">
             {title}
           </h3> : ""}
           <button onClick={onClose} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center ">
@@ -54,7 +54,7 @@ const Modal: React.FC<ModalProps> = ({
           : ""}
         {/* modal body */}
         {type === 'message' ?
-          <div className="px-2 flex justify-center space-y-6">
+          <div className="px-2 space-y-6">
             {content}
           </div> : <>{content}</>}
         {/* modal footer */}

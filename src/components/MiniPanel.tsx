@@ -1,31 +1,90 @@
-import TitleHeader from "./TitleHeader";
+import TitleHeader from "./TitleHeader.tsx";
 import React from "react";
+import Button from "./Button.tsx";
 
 interface Props {
-    title: string;
-    amount: number;
-    date?: string;
-    icon?: React.ReactNode;
+    name: string;
+    code: string;
+    credit: number;
     className?: string;
     disableIconHeader?: boolean;
 }
 // <div className="mb-5 space-x-3 flex flex-wrap md:flex-nowrap ">    thêm này bao quanh nếu mún dùng nhiều  mini để repon 
 
-export default function MiniPanel({ title, amount, date, icon, className = "", disableIconHeader = false }: Props) {
+export default function MiniPanel({ name, code, credit, className = "", disableIconHeader = false }: Props) {
     return (
-        <div className={"w-full md:w-6/12 bg-white shadow-md rounded-2xl mb-4 md:mb-0 " + className}>
-            <div className={"h-[11rem] w-full bg-white rounded-lg p-5 relative shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"}>
-                <TitleHeader title={title} disableIcon={disableIconHeader} />
-                <div className="flex justify-between items-center">
+        <div className={"w-full md:w-10/12 bg-white rounded-2xl mb-4 md:mb-0 " + className}>
+            <div className={"h-auto w-full bg-white rounded-lg p-5 relative shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"}>
+                <TitleHeader title={name} disableIcon={disableIconHeader} />
+                <div className="flex justify-between">
                     <div>
-                        <p className="text-[2.5rem] font-bold my-3">{amount}</p>
-                        <p>{date}</p>
+                        <p >Mã môn: <span className="font-bold">{code}</span></p>
+                        <p >Số tín chỉ: <span className="font-bold">{credit}</span></p>
+                        <p >Ca học có thể đăng ký:</p>
+                        <p className="flex flex-wrap gap-3 mt-2">
+                            <div>
+                                <Button
+                                    type="button"
+                                    size="xs"
+                                    variant="btn-none"
+                                    className="bg-blue-500 p-1 w-full md:w-14 self-center"
+                                >
+                                    Ca 1
+                                </Button>
+                            </div>
+                            <div>
+                                <Button
+                                    type="button"
+                                    size="xs"
+                                    variant="btn-none"
+                                    className="bg-blue-500 p-1 w-full md:w-14 self-center"
+                                    disabled={true}
+                                >
+                                    Ca 2
+                                </Button>
+                            </div>
+                            <div>
+                                <Button
+                                    type="button"
+                                    size="xs"
+                                    variant="btn-none"
+                                    className="bg-blue-500 p-1 w-full md:w-14 self-center"
+                                >
+                                    Ca 3
+                                </Button>
+                            </div>
+                            <div>
+                                <Button
+                                    type="button"
+                                    size="xs"
+                                    variant="btn-none"
+                                    className="bg-blue-500 p-1 w-full md:w-14 self-center"
+                                >
+                                    Ca 4
+                                </Button>
+                            </div>
+                            <div>
+                                <Button
+                                    type="button"
+                                    size="xs"
+                                    variant="btn-none"
+                                    className="bg-blue-500 p-1 w-full md:w-14 self-center"
+                                >
+                                    Ca 5
+                                </Button>
+                            </div>
+                            <div>
+                                <Button
+                                    type="button"
+                                    size="xs"
+                                    variant="btn-none"
+                                    className="bg-blue-500 p-1 w-full md:w-14 self-center"
+                                >
+                                    Ca 6
+                                </Button>
+                            </div>
+                        </p>
                     </div>
-                    {icon && (
-                        <div className="p-2">
-                            {icon}
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

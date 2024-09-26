@@ -1,47 +1,22 @@
-import React from "react";
+import React from 'react';
+import MiniPanel from './MiniPanel.tsx';
+import TitleHeader from './TitleHeader.tsx';
+import CardPanel from './CardPanel.tsx';
 
-interface CardProps {
-    name?: string;
-    id?: number;
-    img?: string;
-    title?: string;
-    date?: string;
-    place?: string;
-    link?: string;
-    className?: string;
-    imgClassName?: string;
-    status?: string
-    hiddenText?: boolean
-}
-
-
-export default function Card({
-    className,
-    imgClassName,
-    img,
-    title,
-    date,
-    place,
-    status,
-    hiddenText }
-    : CardProps) {
+export default function CardBasicExample(): JSX.Element {
     return (
         <>
-            <div className={`${className} relative`} >
-                <img src={`${img}`} alt="" className={`h-20  ${hiddenText ? 'md:h-48' : 'md:h-48 lg:h-64'}  rounded-lg  ${imgClassName}`} />
-                <div className="w-full mt-2">
-                    <div className="w-full flex justify-between">
-                        <p className="text-xs md:text-lg font-semibold hover:text-amber-500 ">{title} <span>{status}</span> </p>
-                        <p className={`hidden md:block ${hiddenText ? 'md:hidden' : ''} self-center text-xs md:text-base text-[#9A9A9A]`}>Địa điểm: {place}</p>
-                    </div>
 
-                    <div className="w-full">
-                        <p className={`text-xs hidden md:block ${hiddenText ? 'md:hidden' : ''} md:text-base text-[#9A9A9A]`}>Bắt đầu: {date} </p>
-                    </div>
-
+            <div
+                className="block w-9/12 rounded-lg bg-white  shadow-lg dark:bg-neutral-700 ">
+                <TitleHeader title={"Danh sách lớp học"} disableIcon={true} className='my-2 px-2 rounded-sm bg-gray-300' />
+                <div className='max-h-[23rem] overflow-auto'>
+                    <CardPanel clazz='WEB105' room='T802' shift={2} amount={36} dateStart='9/9/2024' dateWeek='2, 4, 6' />
+                    <CardPanel clazz='WEB105' room='T802' shift={2} amount={36} dateStart='9/9/2024' dateWeek='2, 4, 6' />
+                    <CardPanel clazz='WEB105' room='T802' shift={2} amount={36} dateStart='9/9/2024' dateWeek='2, 4, 6' />
                 </div>
-            </div>
 
+            </div>
         </>
-    )
+    );
 }

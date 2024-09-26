@@ -8,9 +8,9 @@ const sidebarStructure = [
         link: "/"
     },
     {
-        id: "list",
+        id: "user_list",
         title: "Quản lý người dùng",
-        name: "list",
+        name: "user_list",
         parent: true,
         icon: "list",
         child: [
@@ -56,131 +56,36 @@ const sidebarStructure = [
                 name: "transaksi.po",
                 link: "/dashboard/purchase-order",
                 icon: "dot"
-            },
-            {
-                id: "tagihan",
-                title: "Tagihan",
-                name: "transaksi.tagihan",
-                link: "/dashboard/invoice",
-                icon: "dot"
-            },
-            {
-                id: "pembayaran",
-                title: "Pembayaran",
-                name: "transaksi.pembayaran",
-                link: "/dashboard/payment",
-                icon: "dot"
             }
         ]
     },
     {
-        id: "perusahaan",
-        title: "Perusahaan",
-        name: "perusahaan",
+        id: "schedule",
+        title: "Lịch học",
+        name: "schedule",
         parent: true,
         icon: "perusahaan",
         child: [
             {
-                id: "profile-perusahaan",
-                title: "Profil Perusahaan",
-                name: "perusahaan.profil",
-                link: "/dashboard/company-profile",
+                id: "course-registration",
+                title: "Đăng ký môn học",
+                name: "schedule.course-registration",
+                link: "/dang-ky-mon-hoc",
                 icon: "dot"
             },
             {
-                id: "akun-bank",
-                title: "Akun Bank",
-                name: "perusahaan.bank",
-                link: "/dashboard/bank-account",
+                id: "schedule-child",
+                title: "Lịch học",
+                name: "schedule.schedule-child",
+                link: "/lich-hoc",
                 icon: "dot"
             },
             {
-                id: "alamat",
-                title: "Alamat",
-                name: "perusahaan.alamat",
-                link: "/dashboard/company-address/shipping",
-                icon: "dot",
-                child: [
-                    {
-                        id: "alamat-pengiriman",
-                        title: "Alamat Pengiriman",
-                        name: "perusahaan.alamat.pengiriman",
-                        link: "/dashboard/company-address/shipping",
-                        icon: "dot"
-                    },
-                    {
-                        id: "alamat-tagihan",
-                        title: "Alamat Tagihan",
-                        name: "perusahaan.alamat.tagihan",
-                        link: "/dashboard/company-address/billing",
-                        icon: "dot"
-                    }
-                ]
-            },
-            {
-                id: "daftar-akun-pengguna",
-                title: "Daftar Akun Pengguna",
-                name: "perusahaan.akun",
-                link: "/dashboard/user-account",
+                id: "exam-schedule",
+                title: "Lịch thi",
+                name: "schedule.exam-schedule",
+                link: "/lich-thi",
                 icon: "dot"
-            },
-            {
-                id: "departemen",
-                title: "Departemen",
-                name: "perusahaan.department",
-                link: "/dashboard/department",
-                icon: "dot"
-            },
-            {
-                id: "manajemen-persetujuan",
-                title: "Manajemen Persetujuan",
-                name: "perusahaan.persetujuan",
-                icon: "dot",
-                child: [
-                    {
-                        id: "penyetuju-kategori",
-                        title: "Penyetuju Kategori",
-                        name: "perusahaan.persetujuan.kategori",
-                        link: "/dashboard/approval/category",
-                        icon: "dot"
-                    },
-                    {
-                        id: "penyetuju-departement",
-                        title: "Penyetuju Departemen",
-                        name: "perusahaan.persetujuan.departemen",
-                        link: "/dashboard/approval/department",
-                        icon: "dot"
-                    },
-                    {
-                        id: "e-procurement",
-                        title: "E-procurement",
-                        name: "perusahaan.persetujuan.proc",
-                        link: "/dashboard/approval/eproc",
-                        icon: "dot"
-                    },
-                    {
-                        id: "pengaturan",
-                        title: "Pengaturan",
-                        name: "perusahaan.persetujuan.config",
-                        link: "/dashboard/approval/configure",
-                        icon: "dot"
-                    }
-                ]
-            },
-            {
-                id: "pengaturan-pembelian",
-                title: "Pengaturan Pembelian",
-                name: "perusahaan.pengaturan.pembelian",
-                icon: "dot",
-                child: [
-                    {
-                        id: "anggaran",
-                        title: "Anggaran",
-                        name: "perusahaan.pengaturan.pembelian.anggaran",
-                        link: "/dashboard/purchase-setting/budget",
-                        icon: "dot"
-                    }
-                ]
             }
         ]
     },

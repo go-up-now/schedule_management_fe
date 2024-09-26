@@ -35,39 +35,81 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
     setActiveName(path);
   };
 
+  // const handleToggle = (name: string) => {
+  //   const rootEl = name.split(".")[0];
+
+  //   if (openedMenu[name]?.open === true) {
+  //     setOpenedMenu((prevState) => ({
+  //       ...prevState,
+  //       [name]: {
+  //         open: false,
+  //         height: "0px"
+  //       },
+  //       [rootEl]: {
+  //         open: rootEl === name ? false : true,
+  //         height: `${(listRef.current[rootEl]?.scrollHeight || 0) -
+  //           (listRef.current[name]?.scrollHeight || 0)
+  //           }px`
+  //       }
+  //     }));
+  //   } else {
+  //     setOpenedMenu((prevState) => ({
+  //       ...prevState,
+  //       [name]: {
+  //         open: true,
+  //         height: `${listRef.current[name]?.scrollHeight || 0}px`
+  //       },
+  //       [rootEl]: {
+  //         open: true,
+  //         height: `${(listRef.current[rootEl]?.scrollHeight || 0) +
+  //           (listRef.current[name]?.scrollHeight || 0)
+  //           }px`
+  //       }
+  //     }));
+  //   }
+  // };
+
+
   const handleToggle = (name: string) => {
     const rootEl = name.split(".")[0];
-
-    if (openedMenu[name]?.open === true) {
-      setOpenedMenu((prevState) => ({
-        ...prevState,
-        [name]: {
+  
+    setOpenedMenu((prevState) => {
+      const newState = Object.keys(prevState).reduce((acc, key) => {
+        // Đóng tất cả các menu và submenu ngoại trừ menu hiện tại và menu cha
+        acc[key] = {
           open: false,
-          height: "0px"
-        },
-        [rootEl]: {
-          open: rootEl === name ? false : true,
-          height: `${(listRef.current[rootEl]?.scrollHeight || 0) -
-            (listRef.current[name]?.scrollHeight || 0)
-            }px`
-        }
-      }));
-    } else {
-      setOpenedMenu((prevState) => ({
-        ...prevState,
-        [name]: {
+          height: "0px",
+        };
+        return acc;
+      }, {} as typeof prevState);
+  
+      // Kiểm tra nếu menu hiện tại đang mở
+      const isCurrentlyOpen = prevState[name]?.open;
+  
+      // Nếu menu hiện tại đang mở, đóng nó. Ngược lại, mở nó.
+      newState[name] = {
+        open: !isCurrentlyOpen,
+        height: !isCurrentlyOpen
+          ? `${listRef.current[name]?.scrollHeight || 0}px`
+          : "0px",
+      };
+  
+      // Nếu menu hiện tại không mở, đảm bảo menu cha vẫn mở
+      if (!isCurrentlyOpen) {
+        newState[rootEl] = {
           open: true,
-          height: `${listRef.current[name]?.scrollHeight || 0}px`
-        },
-        [rootEl]: {
-          open: true,
-          height: `${(listRef.current[rootEl]?.scrollHeight || 0) +
-            (listRef.current[name]?.scrollHeight || 0)
-            }px`
-        }
-      }));
-    }
+          height: `${listRef.current[rootEl]?.scrollHeight || 0}px`,
+        };
+      }
+  
+      return newState;
+    });
   };
+  
+
+
+
+
 
   const generateIcon = (icon: string) => {
     var icons_map: Record<string, JSX.Element> = {};
@@ -340,13 +382,13 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
     <nav
       role="navigation"
       className={[
-        "bg-slate-50 border-r border-slate-100 shadow-sm absolute inset-y-0 left-0",
+        "bg-white border-r border-slate-100 shadow-md absolute inset-y-0 left-0",
         "duration-300 ease-in-out md:fixed md:translate-x-0 z-50",
         `${isExpand
-          ? "bg-slate-50 w-72"
+          ? "bg-white w-72"
           : isExpandOnHover
-            ? "bg-slate-50/70 w-72 backdrop-blur-md"
-            : "bg-slate-50 w-20"
+            ? "bg-white w-72 backdrop-blur-md"
+            : "bg-white w-20"
         }`
       ].join(" ")}
     >
