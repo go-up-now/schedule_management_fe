@@ -1,7 +1,7 @@
 import axios from "./Customize-axios";
 
 const FetchAll = () => {
-    return axios.get("/students");
+    return axios.get("/api/students");
 }
 
 export { FetchAll }

@@ -1,7 +1,21 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: 'http://localhost:6969/schedule-manage/api'
+  baseURL: 'http://localhost:6969/schedule-manage',
+  timeout: 10000,
+  headers: {
+    Accept: 'application/json'
+  },
+});
+
+instance.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`; // Thêm token vào header
+  }
+  return config;
+}, error => {
+  return Promise.reject(error);
 });
 
 // Add a response interceptor
@@ -23,7 +37,7 @@ instance.interceptors.response.use(function (response) {
     // The request was made but no response was received
     // `error.request` is an instance of XMLHttpRequest in the browser 
     // and an instance of http.ClientRequest in node.js
-    console.log(error.request);
+    console.log("error: ", error.request);
   } else {
     // Something happened in setting up the request that triggered an Error
     console.log('Error', error.message);

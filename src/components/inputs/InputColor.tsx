@@ -1,5 +1,7 @@
+import React from "react";
+
 const InputColor = (props) => {
-    const { title, type, placeholder } = props;
+    const { title, type, placeholder, onclick, onchange } = props;
     return (
         <>
             <label
@@ -10,6 +12,8 @@ const InputColor = (props) => {
                     type={type}
                     placeholder={placeholder}
                     className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    onClick={onclick}
+                    onChange={onchange}
                 />
             </label>
         </>

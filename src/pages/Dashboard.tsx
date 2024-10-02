@@ -2,7 +2,8 @@ import InputColor from "../components/inputs/InputColor.tsx";
 // import TableIndex from "../components/tables/TableIndex.js";
 import Tables from "../components/tables/Tables.tsx";
 import SelectBox from "../components/SelectBox.tsx";
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     interface User {
@@ -11,6 +12,14 @@ const Dashboard = () => {
         email: string;
         age: number;
     }
+    let navigate = useNavigate();
+
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     if (!token) {
+    //         navigate('/dang-nhap');  // Điều hướng về trang đăng nhập nếu chưa có token
+    //     }
+    // }, [navigate]);
 
     const usersData: User[] = [
         { id: 1, name: 'John Doe', email: 'john@example.com', age: 23 },
@@ -43,7 +52,8 @@ const Dashboard = () => {
             >
             </SelectBox> chọn Bộ môn muốn đăng ký.
 
-            <Tables headers={['Học kỳ', 'Block', 'Ngày bắt đầu', 'Ngày kết thúc', '']} loading={false} data={usersData} maxRow={10} renderRow={renderUserRow} />
+            <Tables headers={['Học kỳ', 'Block', 'Ngày bắt đầu', 'Ngày kết thúc', '']} 
+            loading={false} data={usersData} maxRow={10} renderRow={renderUserRow} />
         </>
     )
 }

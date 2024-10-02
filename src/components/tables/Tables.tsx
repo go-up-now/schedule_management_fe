@@ -141,7 +141,6 @@ const Tables = <T extends object>({
                                 ))}
                             </tbody>
                         </table>
-
                     </div>
                     {currentData.length === 0 && <div className="border flex justify-center items-center w-full py-20 text-2xl">{nonDataMessage}</div>}
                     <section className={`flex items-center my-3 px-4`}>
