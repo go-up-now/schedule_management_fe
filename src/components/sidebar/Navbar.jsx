@@ -1,4 +1,8 @@
+import { useSelector } from 'react-redux';
+
 function Navbar() {
+  const userInfo = useSelector((state) => state.user.userInfo);  // Lấy thông tin người dùng từ Redux
+
   return (
     <div className="sticky top-0 left-0 w-full bg-white z-40">
       <div className="pt-0 pr-0 pb-0 pl-0 mt-0 mr-0 mb-0 ml-0 "></div>
@@ -55,9 +59,18 @@ function Navbar() {
                   absolute -top-px -right-1">2</p>
                 </div>
                 <div className="justify-center items-center flex relative">
+                  <p className="font-semibold text-sm mr-2">
+                    {userInfo ? (
+                      <>
+                        Xin chào, {userInfo.user.firstName}
+                      </>
+                    ) : (
+                      "Please login"
+                    )}
+                  </p>
                   <img src="https://static01.nyt.com/images/2019/11/08/world/08quebec/08quebec-superJumbo.jpg"
-                    className="object-cover btn- h-9 w-9 rounded-full mr-2 bg-gray-300" alt="" />
-                  <p className="font-semibold text-sm">Marrie Currie</p>
+                    className="object-cover btn- h-9 w-9 rounded-full bg-gray-300" alt="" />
+
                 </div>
               </div>
             </div>

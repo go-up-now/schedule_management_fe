@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
 import InputColor from "../components/inputs/InputColor";
-import { handleLoginAPI } from "../services/userService";
+import { handleLoginAPI, getMyInforAPI } from "../services/userService";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../reducers/userSlice.tsx';
 
 export default function LoginPage(): JSX.Element {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     let navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleEmail = (event) => {
         setEmail(event.target.value)
@@ -19,19 +22,23 @@ export default function LoginPage(): JSX.Element {
     }
 
     const handleLogin = async () => {
-        console.log("check login: ", email, password)
         try {
             if (!email || !password) {
                 toast.error('Vui lòng nhập đầy đủ thông tin!')
                 return;
             }
             let data = await handleLoginAPI(email, password)
-            console.log("check api: ", data)
             if (data && data.data.code !== 200) {
                 toast.error(data.data.message)
             } if (data && data.code === 200) {
-
                 localStorage.setItem("token", data.data.token)
+                let userData = await getMyInforAPI();
+                // console.log("check user: ", userData.data)
+
+                dispatch(setUser({
+                    userInfo: userData.data,
+                    token: data.data.token
+                }));
                 navigate('/')
                 toast.success("Chào mừng bạn đến với Schedule Management App")
             }

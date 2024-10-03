@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TitleHeader from "../../components/TitleHeader.tsx";
 import Button from "../../components/Button.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -12,15 +12,17 @@ import useConfirm from "../../hooks/useConfirm.ts"
 import Modal from "../../components/Modal.tsx";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import RegistrationPage from "./RegistrationPage.tsx";
+import { getAllSubjectByYearAndSemester, getAllClazzBySubject } from '../../services/SubjectSerivce.js'
 
 interface Subject {
     id: number;
     code: string;
     name: string;
-    credit: number;
+    credits: number;
     year: number;
     semester: String;
     status: boolean;
+    cost: number
 }
 
 interface Instructor {
@@ -40,17 +42,27 @@ const CourseRegistrationPage = () => {
     const { isConfirmOpen, openConfirm, closeConfirm, confirmAction, confirmQuestion } = useConfirm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenConfirm, setIsModalConfirmOpen] = useState(false);
+    const [listSubject, setListSubject] = useState([]);
+    const [listClazz, setListClazz] = useState([]);
+    const [subject, setSubject] = useState<Subject[]>([]);
 
-    const subjects: Subject[] = [
+    // const subjects: Subject[] = [
 
-        { id: 1, code: 'JAVA1', name: 'Java 1', credit: 3, year: 2024, semester: "SPRING", status: false },
-        { id: 2, code: 'JAVA2', name: 'Java 2', credit: 3, year: 2024, semester: "SPRING", status: false },
-        { id: 3, code: 'JAVA3', name: 'Java 3', credit: 3, year: 2024, semester: "SPRING", status: false }
-    ];
+    //     { id: 1, code: 'JAVA1', name: 'Java 1', credit: 3, year: 2024, semester: "SPRING", status: false },
+    //     { id: 2, code: 'JAVA2', name: 'Java 2', credit: 3, year: 2024, semester: "SPRING", status: false },
+    //     { id: 3, code: 'JAVA3', name: 'Java 3', credit: 3, year: 2024, semester: "SPRING", status: false }
+    // ];
 
-    const openModal = (name) => {
+    const subjects: Subject[] = listSubject;
+
+    const openModal = async (name, item) => {
         if (name === 'detail1') {
             setIsModalOpen(true);
+            let response = await getAllClazzBySubject(item.id);
+            setSubject(item);
+            if (response && response.data) {
+                setListClazz(response.data)
+            }
         }
         else if (name === 'detail2') {
             // ấdasdasda
@@ -58,6 +70,7 @@ const CourseRegistrationPage = () => {
         else if (name === 'cancel')
             setIsModalConfirmOpen(true);
     }
+
     const closeModal = () => {
         setIsModalOpen(false);
         setIsModalConfirmOpen(false);
@@ -65,17 +78,17 @@ const CourseRegistrationPage = () => {
 
     const subjects1: Subject[] = [
 
-        { id: 1, code: 'JAVA1', name: 'Java 1', credit: 3, year: 2024, semester: "SPRING", status: true },
-        { id: 2, code: 'JAVA2', name: 'Java 2', credit: 3, year: 2024, semester: "SPRING", status: true }
+        { id: 1, code: 'JAVA1', name: 'Java 1', credits: 3, year: 2024, semester: "SPRING", status: true, cost: 20000 },
+        { id: 2, code: 'JAVA2', name: 'Java 2', credits: 3, year: 2024, semester: "SPRING", status: true, cost: 20000 }
     ];
 
     const renderRow = (item: Subject) => [
         // <th key={`item-id-${item.id}`} className="px-6 py-4">{item.id}</th>,
         <td key={`item-code-${item.id}`} className="px-6 py-4">{item.code}</td>,
         <td key={`item-name-${item.id}`} className="px-6 py-4 font-bold">{item.name}</td>,
-        <td key={`item-credit-${item.id}`} className="px-6 py-4">{item.credit}</td>,
-        <td key={`item-year-${item.id}`} className="px-6 py-4">{item.year}</td>,
-        <td key={`item-semester-${item.id}`} className="px-6 py-4">{item.semester}</td>,
+        <td key={`item-credit-${item.id}`} className="px-6 py-4">{item.credits}</td>,
+        <td key={`item-year-${item.id}`} className="px-6 py-4">{item.cost}</td>,
+        <td key={`item-semester-${item.id}`} className="px-6 py-4">SPRING 2024</td>,
         <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${item.status ? "text-green-400" : "text-red-500"}`}>
             {item.status ? "Đã đăng ký" : "Chưa đăng ký"}</td>,
         <td key={`item-${item.id}`} className="px-6 py-4 text-center">
@@ -88,7 +101,7 @@ const CourseRegistrationPage = () => {
                                 type="button"
                                 variant="btn-none"
                                 className="w-1 h-[2.4rem] text-zinc-400 w-full"
-                                onClick={() => openModal("detail1")}
+                                onClick={() => openModal("detail1", item)}
                             >
                                 Xem chi tiết
                             </Button>
@@ -112,7 +125,7 @@ const CourseRegistrationPage = () => {
         // <th key={`item-id-${item.id}`} className="px-6 py-4">{item.id}</th>,
         <td key={`item-code-${item.id}`} className="px-6 py-4">{item.code}</td>,
         <td key={`item-name-${item.id}`} className="px-6 py-4 font-bold">{item.name}</td>,
-        <td key={`item-credit-${item.id}`} className="px-6 py-4">{item.credit}</td>,
+        <td key={`item-credit-${item.id}`} className="px-6 py-4">{item.credits}</td>,
         <td key={`item-year-${item.id}`} className="px-6 py-4">{item.year}</td>,
         <td key={`item-semester-${item.id}`} className="px-6 py-4">{item.semester}</td>,
         <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${item.status ? "text-green-400" : "text-red-500"}`}>
@@ -127,7 +140,7 @@ const CourseRegistrationPage = () => {
                                 type="button"
                                 variant="btn-none"
                                 className="w-1 h-[2.4rem] text-zinc-400 w-full"
-                                onClick={() => openModal("detail2")}
+                                onClick={() => openModal("detail2", 1)}
                             >
                                 Xem chi tiết
                             </Button>
@@ -137,7 +150,7 @@ const CourseRegistrationPage = () => {
                                 type="button"
                                 variant="btn-none"
                                 className="w-1 h-[2.4rem] text-zinc-400 w-full"
-                                onClick={() => openModal("cancel")}
+                                onClick={() => openModal("cancel", null)}
                             >
                                 Hủy đăng ký
                             </Button>
@@ -164,7 +177,7 @@ const CourseRegistrationPage = () => {
             content: (
                 <>
                     <Tables
-                        headers={["Mã Môn học", "Tên Môn Học", "Tín chỉ", "Năm học", "Học kỳ", "Trạng thái", ""]}
+                        headers={["Mã Môn học", "Tên Môn Học", "Tín chỉ", "Học phí", "Học kỳ", "Trạng thái", ""]}
                         renderRow={renderRow}
                         data={subjects}
                     />
@@ -197,6 +210,20 @@ const CourseRegistrationPage = () => {
             )
         }
     ]
+
+    useEffect(() => {
+        handleGetAllSubjectByYearAndSemester();
+    }, [])
+
+    const handleGetAllSubjectByYearAndSemester = async () => {
+        let response = await getAllSubjectByYearAndSemester();
+        console.log("check", response)
+        if (response && response.data) {
+            setListSubject(response.data)
+            // let activeSubject = response.data.filter(item => item.user.status);
+            // setListActivityStudent(activeStudents);
+        }
+    }
 
     return (
         <Container>
@@ -232,8 +259,15 @@ const CourseRegistrationPage = () => {
             </div>
             <Modal id={"CourseRegistraionModal"}
                 width="max-w-7xl"
-                title={"Đăng ký học môn xxx"}
-                content={<RegistrationPage />}
+                title={`Đăng ký học môn ${subject?.name}`}
+
+                content={
+                    <RegistrationPage
+                        name={subject?.name}
+                        code={subject?.code}
+                        credit={subject?.credits}
+                    />
+                }
                 positionButton="center"
                 isOpen={isModalOpen}
                 onClose={closeModal}

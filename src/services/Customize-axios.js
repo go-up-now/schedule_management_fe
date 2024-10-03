@@ -1,4 +1,5 @@
 import axios from "axios";
+import store from '../store/store.tsx';
 
 const instance = axios.create({
   baseURL: 'http://localhost:6969/schedule-manage',
@@ -8,12 +9,18 @@ const instance = axios.create({
   },
 });
 
+
 instance.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
+  // const state = store.getState();
+  // if (state) {
+  //   const token = state.user.token;
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`; // Thêm token vào header
   }
   return config;
+  // }
+
 }, error => {
   return Promise.reject(error);
 });
