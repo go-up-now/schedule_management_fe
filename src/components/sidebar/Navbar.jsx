@@ -60,6 +60,7 @@ function Navbar() {
                 </div>
                 <div className="justify-center items-center flex relative">
                   <p className="font-semibold text-sm mr-2">
+                    {console.log(userInfo)}
                     {userInfo ? (
                       <>
                         Xin chào, {userInfo.user.firstName}

@@ -3,16 +3,16 @@ import TitleHeader from "../../components/TitleHeader.tsx";
 import Button from "../../components/Button.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Container from "../../components/Container.tsx"
-import { faEllipsis, faMoneyCheck } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis, faMoneyCheck, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import Tables from "../../components/tables/Tables.tsx";
 import Popover from "../../components/Popover.tsx";
 import TabPanel from "../../components/TabPanel.tsx"
-import ModalConfirm from "../../components/ModalConfirm.tsx"
-import useConfirm from "../../hooks/useConfirm.ts"
 import Modal from "../../components/Modal.tsx";
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import RegistrationPage from "./RegistrationPage.tsx";
-import { getAllSubjectByYearAndSemester, getAllClazzBySubject } from '../../services/SubjectSerivce.js'
+import { getAllSubjectByYearAndSemester } from '../../services/SubjectSerivce.js'
+import { useDispatch } from 'react-redux';
+import { setClazz, removeClazz } from "../../reducers/clazzSlice.tsx";
+import { useSelector } from 'react-redux';
 
 interface Subject {
     id: number;
@@ -25,26 +25,16 @@ interface Subject {
     cost: number
 }
 
-interface Instructor {
-    instructorId?: number;
-    subjectId?: number;
-    result: string;
-    instructorName: string;
-    code: string;
-    registerTeachingId: number;
-    planDate: string;
-    subjectName: string;
-    subjectCode: string;
-    notes?: string
-}
-
 const CourseRegistrationPage = () => {
-    const { isConfirmOpen, openConfirm, closeConfirm, confirmAction, confirmQuestion } = useConfirm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenConfirm, setIsModalConfirmOpen] = useState(false);
     const [listSubject, setListSubject] = useState([]);
-    const [listClazz, setListClazz] = useState([]);
     const [subject, setSubject] = useState<Subject[]>([]);
+    const dispatch = useDispatch();
+    const isOpen = useSelector((state) => state.modal.isOpen);
+    // const { isOpen } = props;
+    // const [isModal, setIsModal] = useState(localStorage.getItem("ismodal"));
+
 
     // const subjects: Subject[] = [
 
@@ -58,11 +48,12 @@ const CourseRegistrationPage = () => {
     const openModal = async (name, item) => {
         if (name === 'detail1') {
             setIsModalOpen(true);
-            let response = await getAllClazzBySubject(item.id);
+
+            dispatch(removeClazz());
+            dispatch(setClazz({
+                subjectId: item.id
+            }));
             setSubject(item);
-            if (response && response.data) {
-                setListClazz(response.data)
-            }
         }
         else if (name === 'detail2') {
             // ấdasdasda
@@ -128,8 +119,8 @@ const CourseRegistrationPage = () => {
         <td key={`item-credit-${item.id}`} className="px-6 py-4">{item.credits}</td>,
         <td key={`item-year-${item.id}`} className="px-6 py-4">{item.year}</td>,
         <td key={`item-semester-${item.id}`} className="px-6 py-4">{item.semester}</td>,
-        <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${item.status ? "text-green-400" : "text-red-500"}`}>
-            {item.status ? "Đã đăng ký" : "Chưa đăng ký"}</td>,
+        <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${!item.status ? "text-green-400" : "text-red-500"}`}>
+            {!item.status ? "Đã thanh toán" : "Chưa thanh toán"}</td>,
         <td key={`item-${item.id}`} className="px-6 py-4 text-center">
 
             <Popover
@@ -215,13 +206,14 @@ const CourseRegistrationPage = () => {
         handleGetAllSubjectByYearAndSemester();
     }, [])
 
+    useEffect(() => {
+        setIsModalOpen(false); // Cập nhật state
+    }, [isOpen])
+
     const handleGetAllSubjectByYearAndSemester = async () => {
         let response = await getAllSubjectByYearAndSemester();
-        console.log("check", response)
         if (response && response.data) {
             setListSubject(response.data)
-            // let activeSubject = response.data.filter(item => item.user.status);
-            // setListActivityStudent(activeStudents);
         }
     }
 
@@ -258,9 +250,8 @@ const CourseRegistrationPage = () => {
 
             </div>
             <Modal id={"CourseRegistraionModal"}
-                width="max-w-7xl"
+                width="max-w-7xl h-5/6"
                 title={`Đăng ký học môn ${subject?.name}`}
-
                 content={
                     <RegistrationPage
                         name={subject?.name}
