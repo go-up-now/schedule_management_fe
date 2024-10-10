@@ -10,7 +10,7 @@ const sidebarStructure = [
     {
         id: "user_list",
         title: "Quản lý người dùng",
-        name: "user_list",
+        name: "list",
         parent: true,
         icon: "list",
         child: [
@@ -18,43 +18,28 @@ const sidebarStructure = [
                 id: "student",
                 title: "Sinh viên",
                 name: "list.student",
-                icon: "student",
-                link: "/sinh-vien"
+                link: "/sinh-vien",
+                icon: "dot"
             },
             {
                 id: "instructor",
                 title: "Quotation",
                 name: "list.instructor",
-                icon: "lecturer",
-                child: [
-                    {
-                        id: "alamat-pengiriman",
-                        title: "Alamat Pengiriman",
-                        name: "list.instructor.pengiriman",
-                        link: "/dashboard/instructor/shipping",
-                        icon: "dot"
-                    },
-                    {
-                        id: "alamat-tagihan",
-                        title: "Alamat Tagihan",
-                        name: "list.instructor.tagihan",
-                        link: "/dashboard/instructor/billing",
-                        icon: "dot"
-                    }
-                ]
+                link: "/giang-vien",
+                icon: "dot",
             },
             {
                 id: "purchase-request",
                 title: "Purchase Request",
-                name: "transaksi.pr",
-                link: "/dashboard/purchase-request",
+                name: "list.transaksi.pr",
+                link: "/purchase-request",
                 icon: "dot"
             },
             {
                 id: "purchase-order",
                 title: "Purchase Order",
-                name: "transaksi.po",
-                link: "/dashboard/purchase-order",
+                name: "list.transaksi.po",
+                link: "/purchase-order",
                 icon: "dot"
             }
         ]

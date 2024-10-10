@@ -4,16 +4,16 @@ function Navbar() {
   const userInfo = useSelector((state) => state.user.userInfo);  // Lấy thông tin người dùng từ Redux
 
   return (
-    <div className="sticky top-0 left-0 w-full bg-white z-40">
+    <div className="sticky top-0 left-0 w-full bg-white z-50">
       <div className="pt-0 pr-0 pb-0 pl-0 mt-0 mr-0 mb-0 ml-0 "></div>
       <div className="bg-white">
         <div className="flex-col flex">
           <div className="w-full border-b-2 border-gray-200">
             <div className="bg-white h-16 justify-between items-center mx-auto px-4 flex">
-              {/* <div>
+              <div>
                 <img src="https://res.cloudinary.com/speedwares/image/upload/v1659284687/windframe-logo-main_daes7r.png"
                   className="block btn- h-8 w-auto" alt="" />
-              </div> */}
+              </div>
               {/* <div className="lg:block mr-auto ml-40 hidden relative max-w-xs">
                 <p className="pl-12 items-center flex absolute inset-y-0 left-0 pointer-events-none">
                   <span className="justify-center items-center flex">
@@ -60,13 +60,16 @@ function Navbar() {
                 </div>
                 <div className="justify-center items-center flex relative">
                   <p className="font-semibold text-sm mr-2">
-                    {console.log(userInfo)}
-                    {userInfo ? (
+                    {userInfo && userInfo.user ? (
                       <>
                         Xin chào, {userInfo.user.firstName}
                       </>
                     ) : (
-                      "Please login"
+                      userInfo ?
+                        <>
+                          Xin chào, {userInfo.firstName}
+                        </>
+                        : "please login"
                     )}
                   </p>
                   <img src="https://static01.nyt.com/images/2019/11/08/world/08quebec/08quebec-superJumbo.jpg"

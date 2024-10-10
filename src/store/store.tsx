@@ -14,7 +14,7 @@ const store = configureStore({
 // Lắng nghe mọi thay đổi và lưu state vào localStorage
 store.subscribe(() => {
     saveStateToLocalStorage({
-        user: store.getState().user, // Chỉ lưu những phần state cần thiết (ở đây là user)
+        // user: store.getState().user, // Chỉ lưu những phần state cần thiết (ở đây là user)
         clazz: store.getState().clazz
     });
 });

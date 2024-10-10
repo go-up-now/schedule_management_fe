@@ -4,4 +4,11 @@ const registerClazz = (clazzId, studentId) => {
     return axios.post(`/api/classes/${clazzId}/${studentId}`);
 }
 
-export { registerClazz }
+const getAllClazzBySubject = (subjectId) => {
+    return axios.get(`/api/classes/subject/${subjectId}`)
+}
+
+export {
+    registerClazz,
+    getAllClazzBySubject
+}

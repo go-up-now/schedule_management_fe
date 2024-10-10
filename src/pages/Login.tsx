@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import InputColor from "../components/inputs/InputColor";
-import { handleLoginAPI, getMyInforAPI } from "../services/userService";
+import { handleLoginAPI } from "../services/authService.js";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../reducers/userSlice.tsx';
+import { isAuthenticated, getUserScope, getRole } from '../utilss/authUtils.ts'
 
 export default function LoginPage(): JSX.Element {
     const [email, setEmail] = useState("");
@@ -32,13 +32,6 @@ export default function LoginPage(): JSX.Element {
                 toast.error(data.data.message)
             } if (data && data.code === 200) {
                 localStorage.setItem("token", data.data.token)
-                let userData = await getMyInforAPI();
-                // console.log("check user: ", userData.data)
-
-                dispatch(setUser({
-                    userInfo: userData.data,
-                    token: data.data.token
-                }));
                 navigate('/')
                 toast.success("Chào mừng bạn đến với Schedule Management App")
             }
@@ -48,6 +41,17 @@ export default function LoginPage(): JSX.Element {
             }
         }
     }
+
+    const handleSubmit = (e) => {
+        if (e && e.key === 'Enter')
+            handleLogin();
+    }
+
+    useEffect(() => {
+        if (isAuthenticated() && getUserScope()) {
+            navigate("/");
+        }
+    }, [navigate]);
 
     return (
         <section className="h-full bg-neutral-200 dark:bg-neutral-700">
@@ -86,6 +90,7 @@ export default function LoginPage(): JSX.Element {
                                                 title="Mật khẩu"
                                                 className="mb-4"
                                                 onchange={(event) => handlePassword(event)}
+                                                onKeyDown={e => handleSubmit(e)}
                                             ></InputColor>
 
                                             {/* <!--Submit button--> */}

@@ -2,7 +2,7 @@ import TitleHeader from "./TitleHeader.tsx";
 import React, { useState, useEffect } from "react";
 import Button from "./Button.tsx";
 import { useSelector } from 'react-redux';
-import { getAllClazzBySubject } from '../services/SubjectSerivce.js'
+import { getAllClazzBySubject } from '../services/ClazzService.js'
 import { useDispatch } from 'react-redux';
 import { setClazz, removeClazz } from "../reducers/clazzSlice.tsx";
 

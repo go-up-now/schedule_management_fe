@@ -1,12 +1,14 @@
 import axios from "./Customize-axios";
 
-const getAllSubjectByYearAndSemester = () => {
-    return axios.get('/api/subjects/spring/2024')
+const getAllSubjectByYearAndSemester = (semester, year, studentId) => {
+    return axios.get(`/api/subjects/${semester}/${year}/${studentId}`)
 }
 
-const getAllClazzBySubject = (subjectId) => {
-    return axios.get(`/api/classes/subject/${subjectId}`)
+const getAllRegisteredSubjectByYearAndSemester = (semester, year, studentId) => {
+    return axios.get(`/api/subjects/registered/${semester}/${year}/${studentId}`)
 }
+
+
 
 // const getMyInforAPI = () => {
 //     return axios.get('/api/students/myInfor')
@@ -14,5 +16,5 @@ const getAllClazzBySubject = (subjectId) => {
 
 export {
     getAllSubjectByYearAndSemester,
-    getAllClazzBySubject
+    getAllRegisteredSubjectByYearAndSemester
 }

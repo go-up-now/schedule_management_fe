@@ -6,20 +6,14 @@ import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+    let navigate = useNavigate();
+
     interface User {
         id: number;
         name: string;
         email: string;
         age: number;
     }
-    let navigate = useNavigate();
-
-    // useEffect(() => {
-    //     const token = localStorage.getItem("token");
-    //     if (!token) {
-    //         navigate('/dang-nhap');  // Điều hướng về trang đăng nhập nếu chưa có token
-    //     }
-    // }, [navigate]);
 
     const usersData: User[] = [
         { id: 1, name: 'John Doe', email: 'john@example.com', age: 23 },
@@ -34,6 +28,8 @@ const Dashboard = () => {
             <td key={user.age}>{user.age}</td>
         ];
     };
+
+
 
     return (
         <>
@@ -52,8 +48,8 @@ const Dashboard = () => {
             >
             </SelectBox> chọn Bộ môn muốn đăng ký.
 
-            <Tables headers={['Học kỳ', 'Block', 'Ngày bắt đầu', 'Ngày kết thúc', '']} 
-            loading={false} data={usersData} maxRow={10} renderRow={renderUserRow} />
+            <Tables headers={['Học kỳ', 'Block', 'Ngày bắt đầu', 'Ngày kết thúc', '']}
+                loading={false} data={usersData} maxRow={10} renderRow={renderUserRow} />
         </>
     )
 }

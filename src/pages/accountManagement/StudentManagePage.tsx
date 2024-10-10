@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import TitleHeader from "../components/TitleHeader.tsx";
-import Button from "../components/Button.tsx";
-import SelectBox from "../components/SelectBox.tsx"
+import TitleHeader from "../../components/TitleHeader.tsx";
+import Button from "../../components/Button.tsx";
+import SelectBox from "../../components/SelectBox.tsx"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import Tables from "../components/tables/Tables.tsx";
-import CardBox from "../components/CartBox.tsx";
+import Tables from "../../components/tables/Tables.tsx";
+import CardBox from "../../components/CartBox.tsx";
 import { faEllipsis, faFile, faFileExport, faPlus, faUserCheck, faUserGroup, faUserXmark } from '@fortawesome/free-solid-svg-icons';
-import { FetchAll } from "../services/StudentService.js";
-import useHoverModal from "../hooks/useHoverModal.ts";
-import Popover from "../components/Popover.tsx";
-import Container from "../components/Container.tsx"
+import { FetchAll } from "../../services/StudentService.js";
+import useHoverModal from "../../hooks/useHoverModal.ts";
+import Popover from "../../components/Popover.tsx";
+import Container from "../../components/Container.tsx"
 
 interface User {
     id: number;

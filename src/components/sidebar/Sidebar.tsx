@@ -72,7 +72,7 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
 
   const handleToggle = (name: string) => {
     const rootEl = name.split(".")[0];
-  
+
     setOpenedMenu((prevState) => {
       const newState = Object.keys(prevState).reduce((acc, key) => {
         // Đóng tất cả các menu và submenu ngoại trừ menu hiện tại và menu cha
@@ -82,10 +82,10 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
         };
         return acc;
       }, {} as typeof prevState);
-  
+
       // Kiểm tra nếu menu hiện tại đang mở
       const isCurrentlyOpen = prevState[name]?.open;
-  
+
       // Nếu menu hiện tại đang mở, đóng nó. Ngược lại, mở nó.
       newState[name] = {
         open: !isCurrentlyOpen,
@@ -93,7 +93,7 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
           ? `${listRef.current[name]?.scrollHeight || 0}px`
           : "0px",
       };
-  
+
       // Nếu menu hiện tại không mở, đảm bảo menu cha vẫn mở
       if (!isCurrentlyOpen) {
         newState[rootEl] = {
@@ -101,11 +101,11 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
           height: `${listRef.current[rootEl]?.scrollHeight || 0}px`,
         };
       }
-  
+
       return newState;
     });
   };
-  
+
 
 
 
@@ -383,7 +383,7 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
       role="navigation"
       className={[
         "bg-white border-r border-slate-100 shadow-md absolute inset-y-0 left-0",
-        "duration-300 ease-in-out md:fixed md:translate-x-0 z-50",
+        "duration-300 ease-in-out md:fixed md:translate-x-0 z-40 mt-16",
         `${isExpand
           ? "bg-white w-72"
           : isExpandOnHover
@@ -420,7 +420,7 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
       >
         <SimpleBar style={{ height: "100%" }} autoHide >
           <div className="text-slate-500">
-            <div className="my-3 flex flex-col items-center h-33 overflow-x-hidden">
+            {/* <div className="my-3 flex flex-col items-center h-33 overflow-x-hidden">
               <a
                 href={link}
                 className={`text-center flex flex-col items-center justify-center`}
@@ -435,7 +435,7 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
                 >
                   <img src={profilePic} className="block" alt="" />
                 </div>
-                {/* <div
+                <div
                   className={`text-base font-semibold text-slate-700 mt-3 truncate duration-300 ${isExpand ? "" : isExpandOnHover ? "" : "w-0 h-0 opacity-0"
                     }`}
                 >
@@ -446,9 +446,9 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
                     }`}
                 >
                   {company}
-                </div> */}
+                </div>
               </a>
-            </div>
+            </div> */}
 
             <div className="mt-3 mb-10 p-0">
               <ul className="list-none text-sm font-normal px-3">
