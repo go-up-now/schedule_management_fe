@@ -39,10 +39,26 @@ const Tables = <T extends object>({
 
     useEffect(() => {
         setFilteredData(
+            // data.filter((item) =>
+            //     (selectedFilter === '' || Object.values(item).some((val) => val?.toString().includes(selectedFilter))) &&
+            //     Object.values(item).some((val) => val?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+            // )
             data.filter((item) =>
-                (selectedFilter === '' || Object.values(item).some((val) => val?.toString().includes(selectedFilter))) &&
-                Object.values(item).some((val) => val?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+                (selectedFilter === '' ||
+                    Object.entries(item).some(([key, val]) =>
+                        // Kiểm tra nếu giá trị là object thì lọc trong đó, nếu không thì kiểm tra trực tiếp
+                        typeof val === 'object' && val !== null
+                            ? Object.values(val).some(innerVal => innerVal?.toString().includes(selectedFilter))
+                            : val?.toString().includes(selectedFilter)
+                    )) &&
+                Object.entries(item).some(([key, val]) =>
+                    // Tương tự cho searchTerm
+                    typeof val === 'object' && val !== null
+                        ? Object.values(val).some(innerVal => innerVal?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+                        : val?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+                )
             )
+
         );
         setCurrentPage(0);
     }, [data, searchTerm, selectedFilter]);
@@ -123,7 +139,7 @@ const Tables = <T extends object>({
 
 
                         {/* Mobile view */}
-                        <table className="min-w-full text-sm text-left rtl:text-right text-gray-500 md:hidden">
+                        {/* <table className="min-w-full text-sm text-left rtl:text-right text-gray-500 md:hidden">
                             <tbody>
                                 {currentData.map((item, index) => (
                                     <tr key={index} className="bg-white border-2 rounded-lg mb-4 text-xs border-slate-300">
@@ -140,7 +156,7 @@ const Tables = <T extends object>({
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </table> */}
                     </div>
                     {currentData.length === 0 && <div className="border flex justify-center items-center w-full py-20 text-2xl">{nonDataMessage}</div>}
                     <section className={`flex items-center my-3 px-4`}>
@@ -164,7 +180,7 @@ const Tables = <T extends object>({
                                         setRowsPerPage(parseInt(event.target.value));
                                         setCurrentPage(0)
                                     }}
-                                    options={[{ label: '10', value: 10 }, { label: '25', value: 25 }, { label: 50, value: 50 }, { label: '100', value: 100 }]}
+                                    options={[{ label: '5', value: 5 }, { label: '10', value: 10 }, { label: '25', value: 25 }, { label: 50, value: 50 }, { label: '100', value: 100 }]}
                                     disableDefaultOption
                                 />
                                 <span>Mục</span>

@@ -1,6 +1,6 @@
 import axios from "./Customize-axios";
 
-const FetchAll = () => {
+const getAllStudents = () => {
     return axios.get("/api/students");
 }
 
@@ -13,7 +13,7 @@ const getStudentMyInforAPI = () => {
 }
 
 export {
-    FetchAll,
+    getAllStudents,
     cancelRegisteredClazz,
     getStudentMyInforAPI
 }

@@ -6,10 +6,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Tables from "../../components/tables/Tables.tsx";
 import CardBox from "../../components/CartBox.tsx";
 import { faEllipsis, faFile, faFileExport, faPlus, faUserCheck, faUserGroup, faUserXmark } from '@fortawesome/free-solid-svg-icons';
-import { FetchAll } from "../../services/StudentService.js";
+import { getAllStudents } from "../../services/StudentService.js";
+import { getAllAreas } from "../../services/areaService.js";
+import { getAllMajors } from "../../services/majorService.js";
 import useHoverModal from "../../hooks/useHoverModal.ts";
 import Popover from "../../components/Popover.tsx";
 import Container from "../../components/Container.tsx"
+import { useSelector } from 'react-redux';
 
 interface User {
     id: number;
@@ -27,29 +30,29 @@ interface Student {
     user: User;
 }
 
+interface Area {
+    id: string;
+    name: string;
+}
 
+interface Major {
+    id: number;
+    name: string;
+}
 
 const StudentManagePage = () => {
     const [listStudent, setListStudent] = useState([]);
+    const [listStudentAPI, setListStudentAPI] = useState([]);
+    const [listAreas, setListAreas] = useState<Area[]>([]);
+    const [listMajors, setListMajors] = useState<Major[]>([]);
     const [listActivityStudent, setListActivityStudent] = useState([]);
     const getPosition = (rect: DOMRect) => ({ top: rect.top + window.scrollY - 10, left: rect.left + rect.width - 200 });
     const { isModalOpen, modalPosition, handleMouseEnter, closeModal, targetValue } = useHoverModal(getPosition);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const instructors: Student[] = listStudent;
+    const userInfo = useSelector((state) => state.user.userInfo);
 
-    // const instructors: Student[] = [
-    //     {
-    //         id: 1,
-    //         user: {
-    //             code: 'binhtq7',
-    //             lastName: 'Hà Thanh', firstName: 'Liêm',
-    //         }
-    //     },
-    // { id: 2, code: 'binhtq7', last_name: 'Trần Quang', first_name: 'Bình', specialization_count: 2, subject_count: 12, activity_mark: 1700 },
-    // { id: 3, code: 'ngahth', last_name: 'Hồ Thị Hồng', first_name: 'Nga', specialization_count: 2, subject_count: 28, activity_mark: 2900 },
-    // { id: 4, code: 'hotb17', last_name: 'Trần Bá', first_name: 'Hộ', specialization_count: 2, subject_count: 10, activity_mark: 1000 },
-    // { id: 5, code: 'vyta', last_name: 'Thái Anh', first_name: 'Vỹ', specialization_count: 2, subject_count: 20, activity_mark: 2000 },
-    // ];
+    const instructors: Student[] = listStudent.length > 0 ? listStudent : listStudentAPI;
 
     const renderRow = (item: Student) => [
         // <th key={`item-id-${item.id}`} className="px-6 py-4">{item.id}</th>,
@@ -58,7 +61,7 @@ const StudentManagePage = () => {
         <td key={`item-gender-${item.id}`} className="px-6 py-4">{item.user.gender ? "Nam" : "Nữ"}</td>,
         <td key={`item-birthday-${item.id}`} className="px-6 py-4">{item.user.birthday}</td>,
         <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${item.user.status ? "text-green-400" : "text-red-500"}`}>
-            {item.user.status ? "Hoạt động" : "Không hoạt động"}</td>,
+            {item.user.status ? "Đang học" : "Đã tốt nghiệp"}</td>,
         <td key={`item-${item.id}`} className="px-6 py-4 text-center">
 
             <Popover
@@ -99,50 +102,111 @@ const StudentManagePage = () => {
         </td>,
     ];
 
+
+    const areasOptions = listAreas.map(area => (
+        {
+            value: area.id,
+            label: area.name
+        }));
+    // Thêm giá trị mặc định vào đầu mảng
+    areasOptions.unshift({ value: "", label: "Theo khu vực" });
+
+    const majorOptions = listMajors.map(major => ({
+        value: major.id,
+        label: major.name
+    }));
+    // Thêm giá trị mặc định vào đầu mảng
+    majorOptions.unshift({ value: "", label: "Theo ngành học" });
+
     useEffect(() => {
-        getStudents();
+        handleAPI();
     }, [])
 
-    const getStudents = async () => {
-        let response = await FetchAll();
-        if (response && response.data) {
-            setListStudent(response.data)
-            const activeStudents = response.data.filter(item => item.user.status);
-            setListActivityStudent(activeStudents);
+    const handleAPI = async () => {
+        // get majors
+        let responseMajors = await getAllMajors();
+        if (responseMajors && responseMajors.data) {
+            setListMajors(responseMajors.data)
+        }
+        // get areas
+        let responseAreas = await getAllAreas();
+        if (responseAreas && responseAreas.data) {
+            setListAreas(responseAreas.data)
+        }
+
+        // GET STUDENT
+        setIsLoading(true)
+        try {
+            let response = await getAllStudents();
+            if (response && response.data) {
+                setTimeout(() => {
+                    setListStudentAPI(response.data)
+                    const activeStudents = response.data.filter(item => item.user.status);
+                    setListActivityStudent(activeStudents);
+
+                    // load dssv theo khu vực của admin
+                    if (userInfo && userInfo.user) {
+                        let userAreaId = userInfo.user.area.id
+                        let students = response.data.filter(student => userAreaId == student.user.area.id)
+                        setListStudent(students)
+                    }
+                    else if (userInfo) {
+                        let userAreaId = userInfo.area.id
+                        let students = response.data.filter(student => userAreaId == student.user.area.id)
+                        setListStudent(students)
+                    }
+                }, 2000);
+
+            }
+        } catch (error) {
+            console.log("Lỗi lấy thông tin sinh viên", error)
+        } finally {
+            setIsLoading(false)
         }
     }
 
-    const handleEdit = () => {
-        // <HoverModal />
+    const handleArea = (event) => {
+        let areaId = event.target.value; // areaId luôn là kiểu string
+        console.log(areaId)
+        let students = listStudentAPI.filter(student => areaId == student.user.area.id)
+        setListStudent(students)
     }
 
     return (
         <Container>
             <TitleHeader title="QUẢN LÝ SINH VIÊN" />
             <div className="w-full flex flex-wrap md:flex-nowrap py-3 gap-3">
-                <CardBox icon={faUserGroup} title="Tổng số sinh viên" count={listStudent.length} />
-                <CardBox icon={faUserCheck} title="Sinh viên đang hoạt động" count={listActivityStudent.length} />
-                <CardBox icon={faUserXmark} title="Sinh viên dừng hoạt động" count={listStudent.length - listActivityStudent.length} />
+                <CardBox icon={faUserGroup} title="Tổng số sinh viên" count={listStudentAPI.length} />
+                <CardBox icon={faUserCheck} title="Đang học" count={listActivityStudent.length} />
+                <CardBox icon={faUserXmark} title="Đã tốt nghiệp" count={listStudentAPI.length - listActivityStudent.length} />
             </div>
 
             <div className="w-full bg-white p-4 shadow-md rounded-2xl">
                 <div>
-                    <p className="text-[#9A9A9A] text-xs self-center mr-3 pb-2">Số lượng: <strong>30</strong></p>
+                    {/* <p className="text-[#9A9A9A] text-xs self-center mr-3 pb-2">Số lượng: <strong>30</strong></p> */}
                     <div className="flex flex-wrap gap-2">
                         <div className="columns-1">
                             <SelectBox
                                 id="subject"
                                 name="subject"
-                                defaultOptionValue="Theo khu vực"
-                                options={[{ value: '1', label: 'Hồ Chí Minh' }, { value: '2', label: 'Hà Nội' }]}
+                                disableDefaultOption={true}
+                                options={areasOptions}
+                                defaultValue={userInfo && userInfo.user ? userInfo.user.area.id : userInfo ? userInfo.area.id : ""}
+                                onChange={event => handleArea(event)}
                             />
                         </div>
                         <div className="columns-1">
                             <SelectBox
                                 id="semester"
                                 name="semester"
-                                defaultOptionValue="Theo học kỳ"
-                                options={[{ value: '1', label: 'Spring 2023' }]}
+                                disableDefaultOption={true}
+                                options={[
+                                    { value: '', label: 'Theo học kỳ' },
+                                    { value: '4', label: 'Fall 2023' },
+                                    { value: '1', label: 'Spring 2024' },
+                                    { value: '2', label: 'Summer 2024' },
+                                    { value: '3', label: 'Fall 2024' }
+                                ]}
                             />
                         </div>
 
@@ -150,9 +214,8 @@ const StudentManagePage = () => {
                             <SelectBox
                                 id="specialization"
                                 name="specialization"
-                                disable={true}
-                                defaultOptionValue="Công nghệ thông tin"
-                                options={[{ value: '1', label: 'Công nghệ thông tin' }]}
+                                disableDefaultOption={true}
+                                options={majorOptions}
                             />
                         </div>
                         <div className="columns-1">
@@ -192,6 +255,15 @@ const StudentManagePage = () => {
                         headers={["Mã Sinh Viên", "Họ Và Tên", "Giới tính", "Ngày sinh", "Trạng thái", ""]}
                         renderRow={renderRow}
                         data={instructors}
+                        advanced={true}
+                        optionsValue={[
+                            { value: '', label: 'Tất cả' },
+                            { value: true, label: 'Đang học' },
+                            { value: false, label: 'Đã tốt nghiệp' }
+                        ]}
+                        maxRow={5}
+                        loading={isLoading}
+                        advancedRowFilter
                     />
                 </div>
 
