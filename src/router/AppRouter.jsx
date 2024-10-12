@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom"
 import Dashboard from "../pages/Dashboard.tsx"
 import NotFound from "../pages/NotFound.jsx"
-import StudentManagePage from "../pages/accountManagement/StudentManagePage.tsx"
+import StudentManagePage from "../pages/accountManagement/students/StudentManagePage.tsx"
 import CourseRegistrationPage from "../pages/schedule/index.tsx"
 import { isAuthenticated, getUserScope } from '../utilss/authUtils.ts'
 

@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from "react";
-import TitleHeader from "../../components/TitleHeader.tsx";
-import Button from "../../components/Button.tsx";
-import SelectBox from "../../components/SelectBox.tsx"
+import TitleHeader from "../../../components/TitleHeader.tsx";
+import Button from "../../../components/Button.tsx";
+import SelectBox from "../../../components/SelectBox.tsx"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import Tables from "../../components/tables/Tables.tsx";
-import CardBox from "../../components/CartBox.tsx";
-import { faEllipsis, faFile, faFileExport, faPlus, faUserCheck, faUserGroup, faUserXmark, faMoneyCheck, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { getAllStudents } from "../../services/StudentService.js";
-import { getAllAreas } from "../../services/areaService.js";
-import { getAllMajors } from "../../services/majorService.js";
-import useHoverModal from "../../hooks/useHoverModal.ts";
-import Popover from "../../components/Popover.tsx";
-import Container from "../../components/Container.tsx"
+import Tables from "../../../components/tables/Tables.tsx";
+import CardBox from "../../../components/CartBox.tsx";
+import { faEllipsis, faFile, faFileExport, faPlus, faPen, faUserCheck, faUserGroup, faUserXmark, faTrash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { getAllStudents } from "../../../services/StudentService.js";
+import { getAllAreas } from "../../../services/areaService.js";
+import { getAllMajors } from "../../../services/majorService.js";
+import useHoverModal from "../../../hooks/useHoverModal.ts";
+import Popover from "../../../components/Popover.tsx";
+import Container from "../../../components/Container.tsx"
 import { useSelector } from 'react-redux';
-import { Semesters } from '../../utilss/semestersUtils.tsx'
-import Modal from "../../components/Modal.tsx";
+import { Semesters } from '../../../utilss/semestersUtils.tsx'
+import Modal from "../../../components/Modal.tsx";
+import { StudentModal } from "./StudentModal.tsx";
 
 interface User {
     id: number;
@@ -79,20 +80,20 @@ const StudentManagePage = () => {
                             <Button
                                 type="button"
                                 variant="btn-none"
-                                className="w-1 h-[2.4rem] text-zinc-400 w-full"
-                                onClick={(event) => openModal(item, event)}
+                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-yellow-500"
+                                onClick={(event) => openModal(item, 'Sửa')}
                             >
-                                Sửa
+                                <FontAwesomeIcon icon={faPen} />
                             </Button>
                         </div>
                         <div className="hover:bg-gray-200 rounded-xl">
                             <Button
                                 type="button"
                                 variant="btn-none"
-                                className="w-1 h-[2.4rem] text-zinc-400 w-full"
-                                onClick={(event) => openModal(item, event)}
+                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-orange-500"
+                                onClick={(event) => openModal(item, 'Xóa')}
                             >
-                                Xóa
+                                <FontAwesomeIcon icon={faTrash} />
                             </Button>
                         </div>
                     </>
@@ -210,18 +211,18 @@ const StudentManagePage = () => {
         setIsModalConfirmOpen(false);
     }
 
-    const openModal = async (item, event) => {
-        if (item === 'insert') {
+    const openModal = async (item, id) => {
+        if (id === 'insert') {
             setIsModalOpenInsert(true);
             console.log("123 ")
         }
-        else if (event.target.innerHTML === 'Sửa') {
+        else if (id === 'Sửa') {
             setIsModalOpenUpdate(true);
-            console.log("123 ", event.target.innerHTML)
+            console.log("123 ", id)
         }
-        else if (event.target.innerHTML === 'Xóa') {
+        else if (id === 'Xóa') {
             setIsModalConfirmOpen(true);
-            console.log("123 ", event.target.innerHTML)
+            console.log("123 ", id)
         }
     }
 
@@ -318,7 +319,7 @@ const StudentManagePage = () => {
                                 size="xs"
                                 variant="btn-none"
                                 className="bg-blue-500 p-2 w-full md:w-40 self-center"
-                                onClick={(event) => openModal("insert", event)}
+                                onClick={(event) => openModal('', 'insert')}
                             >
                                 <FontAwesomeIcon icon={faPlus} /> Thêm sinh viên
                             </Button>
@@ -345,29 +346,59 @@ const StudentManagePage = () => {
                         width="w-full md:max-w-6xl h-full"
                         title={`Thêm mới sinh viên`}
                         content={
-                            <>123</>
+                            <StudentModal />
                         }
-                        positionButton="center"
+                        positionButton="end"
                         isOpen={isModalOpenInsert}
                         onClose={closeModal}
                         type="message"
+                        buttonCancel={
+                            <Button
+                                // onClick={() => handleCloseModal('addActivity')}
+                                hiddenParent="addActivity" variant="btn-secondary" type="button">
+                                Hủy
+                            </Button>
+                        }
+                        buttonConfirm={<Button
+                            // onClick={() => formikActivity.submitForm()}
+                            variant="btn-primary"
+                            icon={<FontAwesomeIcon icon={faPlus} />}
+                            size="text-sm w-20"
+                        >
+                            Lưu
+                        </Button>}
                     >
                     </Modal>
                     <Modal id={"CourseRegistraionModal"}
                         width="w-full md:max-w-6xl h-full"
                         title={`Cập nhật sinh viên`}
                         content={
-                            <>123</>
+                            <StudentModal />
                         }
-                        positionButton="center"
+                        positionButton="end"
                         isOpen={isModalOpenUpdate}
                         onClose={closeModal}
                         type="message"
+                        buttonCancel={
+                            <Button
+                                // onClick={() => handleCloseModal('addActivity')}
+                                hiddenParent="addActivity" variant="btn-secondary" type="button">
+                                Hủy
+                            </Button>
+                        }
+                        buttonConfirm={<Button
+                            // onClick={() => formikActivity.submitForm()}
+                            variant="btn-primary"
+                            icon={<FontAwesomeIcon icon={faPlus} />}
+                            size="text-sm w-20"
+                        >
+                            Lưu
+                        </Button>}
                     >
                     </Modal>
                     <Modal id={"denyConfirmModal"}
                         width="max-w-xl"
-                        title={"Bạn muốn hủy bỏ môn học này?"}
+                        title={"Bạn muốn xóa sinh viên này?"}
                         content={<></>}
                         iconPopup={<FontAwesomeIcon icon={faCircleExclamation} className="text-yellow-600 w-24 h-24" />}
                         positionButton="center"
