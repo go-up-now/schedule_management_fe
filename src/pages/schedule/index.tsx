@@ -76,7 +76,6 @@ const CourseRegistrationPage = () => {
             setIsModalConfirmOpen(true);
             setIdSubject(item.id);
         }
-
     }
 
     const handleCancelSubject = async () => {
