@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Tables from "../../../components/tables/Tables.tsx";
 import CardBox from "../../../components/CartBox.tsx";
 import { faEllipsis, faFile, faFileExport, faPlus, faPen, faUserCheck, faUserGroup, faUserXmark, faTrash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { getAllStudents } from "../../../services/StudentService.js";
+import { getAllStudents, createStudentAPI } from "../../../services/StudentService.js";
 import { getAllAreas } from "../../../services/areaService.js";
 import { getAllMajors } from "../../../services/majorService.js";
 import useHoverModal from "../../../hooks/useHoverModal.ts";
@@ -16,20 +16,35 @@ import { useSelector } from 'react-redux';
 import { Semesters } from '../../../utilss/semestersUtils.tsx'
 import Modal from "../../../components/Modal.tsx";
 import { StudentModal } from "./StudentModal.tsx";
+import { useFormik } from 'formik';
+import { StudentSchema } from './StudentModal.tsx'
+import ModalConfirm from '../../../components/ModalConfirm.tsx'
+import useConfirm from "../../../hooks/useConfirm";
+import { toast } from 'react-toastify';
+import { getAllEducationProgramAPI } from '../../../services/educationProgramService.js'
 
 interface User {
     id: number;
     code: string;
     lastName: string;
     firstName: string;
-    gender: String;
-    birthday: number;
+    email: string;
+    password: string;
+    gender: number;
+    birthday: string;
+    phone: string;
+    address: string;
+    description: string;
+    area: number;
+    avatar: string;
     status: boolean;
 }
 
 interface Student {
     id: number;
-    semester: String;
+    enterSchool: string;
+    semester: string;
+    year: number;
     user: User;
 }
 
@@ -43,12 +58,42 @@ interface Major {
     name: string;
 }
 
+interface EducationProgram {
+    code: string;
+    name: string;
+}
+
+interface TypeStudent {
+    id: number,
+    enterSchool: string;
+    semester: string;
+    education_program: string;
+    year: string;
+    user: {
+        code: string;
+        lastName: string;
+        firstName: string;
+        email: string;
+        password: string;
+        gender: string;
+        birthday: string;
+        phone: string;
+        address: string;
+        description: string;
+        area: string;
+        avatar: string;
+        status: boolean;
+    }
+}
+
+
 const StudentManagePage = () => {
     const [listStudent, setListStudent] = useState([]);
     const [listStudentAPI, setListStudentAPI] = useState([]);
     const [listAreas, setListAreas] = useState<Area[]>([]);
     const [listMajors, setListMajors] = useState<Major[]>([]);
     const [listActivityStudent, setListActivityStudent] = useState([]);
+    const [listEducationProgram, setListEducationProgram] = useState<EducationProgram[]>([]);
     const getPosition = (rect: DOMRect) => ({ top: rect.top + window.scrollY - 10, left: rect.left + rect.width - 200 });
     const { handleMouseEnter, targetValue } = useHoverModal(getPosition);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -60,6 +105,7 @@ const StudentManagePage = () => {
     const [isModalOpenInsert, setIsModalOpenInsert] = useState(false);
     const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
     const [isModalOpenConfirm, setIsModalConfirmOpen] = useState(false);
+    const { isConfirmOpen, openConfirm, closeConfirm, confirmAction, confirmQuestion } = useConfirm();
 
     const students: Student[] = listStudent.length > 0 ? listStudent : listStudent;
 
@@ -111,12 +157,18 @@ const StudentManagePage = () => {
         </td>,
     ];
 
+    const areas = listAreas.map(area => (
+        {
+            value: area.id,
+            label: area.name
+        }));
 
     const areasOptions = listAreas.map(area => (
         {
             value: area.id,
             label: area.name
         }));
+
     // Thêm giá trị mặc định vào đầu mảng
     areasOptions.unshift({ value: "", label: "Theo khu vực" });
 
@@ -126,6 +178,12 @@ const StudentManagePage = () => {
     }));
     // Thêm giá trị mặc định vào đầu mảng
     majorOptions.unshift({ value: "", label: "Theo ngành học" });
+
+    const educationProgramOptions = listEducationProgram.map(area => (
+        {
+            value: area.code,
+            label: area.name
+        }));
 
     const handleAPI = async () => {
         // get majors
@@ -137,6 +195,12 @@ const StudentManagePage = () => {
         let responseAreas = await getAllAreas();
         if (responseAreas && responseAreas.data) {
             setListAreas(responseAreas.data)
+        }
+
+        // get education programs
+        let responseEducationPrograms = await getAllEducationProgramAPI();
+        if (responseEducationPrograms && responseEducationPrograms.data) {
+            setListEducationProgram(responseEducationPrograms.data)
         }
 
         // GET STUDENT
@@ -214,17 +278,89 @@ const StudentManagePage = () => {
     const openModal = async (item, id) => {
         if (id === 'insert') {
             setIsModalOpenInsert(true);
-            console.log("123 ")
         }
         else if (id === 'Sửa') {
             setIsModalOpenUpdate(true);
-            console.log("123 ", id)
         }
         else if (id === 'Xóa') {
             setIsModalConfirmOpen(true);
-            console.log("123 ", id)
         }
     }
+
+    const formikStudent = useFormik({
+        initialValues: {
+            id: 0,
+            enterSchool: '',
+            semester: '',
+            education_program: '',
+            year: '',
+            user: {
+                code: '',
+                lastName: '',
+                firstName: '',
+                email: '',
+                password: '',
+                gender: '',
+                birthday: '',
+                phone: '',
+                address: '',
+                description: '',
+                area: '',
+                avatar: '',
+                status: true,
+            },
+        },
+        validationSchema: StudentSchema,
+
+        onSubmit: async (values, { resetForm }) => {
+            const formattedStudent: TypeStudent = {
+                ...values,
+                user: {
+                    ...values.user,
+                    // birthday: formattedSelectedDate(new Date(values.user.birthday))
+                },
+                // enterSchool: formattedSelectedDate(new Date(values.enterSchool))
+            };
+            console.log(values.id)
+            const action = async () => {
+                if (values.id === 0) {
+                    try {
+                        console.log("data: ", formattedStudent);
+                        const response = await createStudentAPI(formattedStudent);
+                        console.log(response);
+                        if (response && response.data) {
+                            if (response.data.code !== 200)
+                                toast.error(response.data.message)
+                            if (response.code === 200)
+                                toast.success("Thêm mới sinh viên thành công")
+
+                            let responseAllStudents = await getAllStudents();
+                            setListStudentAPI(responseAllStudents.data)
+                            setListStudent(responseAllStudents.data)
+                            const activeStudents = responseAllStudents.data.filter(item => item.user.status);
+                            setListActivityStudent(activeStudents);
+                        }
+                    } catch (error) {
+                        console.log(error);
+                        toast.error("Thêm sinh viên không thành công")
+                    }
+                } else {
+                    // try {
+                    //     await handleUpdateActivity(formattedStudent);
+                    //     toast.success("Cập nhật hoạt động thành công")
+                    // } catch (error) {
+                    //     toast.error("Cập nhật hoạt động không thàn công")
+                    // }
+
+                }
+
+                closeModal();
+                resetForm();
+            };
+            openConfirm(action, "Bạn có chắc muốn thêm sinh viên này?");
+            // toast.success("Đã thêm hoạt động mới")
+        },
+    });
 
     useEffect(() => {
         handleAPI();
@@ -271,8 +407,8 @@ const StudentManagePage = () => {
                     <div className="flex flex-wrap gap-2">
                         <div className="columns-1">
                             <SelectBox
-                                id="subject"
-                                name="subject"
+                                id="areas"
+                                name="areas"
                                 disableDefaultOption={true}
                                 options={areasOptions}
                                 defaultValue={userInfo && userInfo.user ? userInfo.user.area.id : userInfo ? userInfo.area.id : ""}
@@ -287,8 +423,8 @@ const StudentManagePage = () => {
 
                         <div className="columns-1">
                             <SelectBox
-                                id="specialization"
-                                name="specialization"
+                                id="majors"
+                                name="majors"
                                 disableDefaultOption={true}
                                 options={majorOptions}
                                 onChange={event => setSelectedMajor(event.target.value)}
@@ -343,10 +479,14 @@ const StudentManagePage = () => {
                         advancedRowFilter
                     />
                     <Modal id={"CourseRegistraionModal"}
-                        width="w-full md:max-w-6xl h-full"
+                        width="w-full md:max-w-6xl h-auto"
                         title={`Thêm mới sinh viên`}
                         content={
-                            <StudentModal />
+                            <StudentModal
+                                formik={formikStudent}
+                                areaOption={areas}
+                                educationProgramOption={educationProgramOptions}
+                            />
                         }
                         positionButton="end"
                         isOpen={isModalOpenInsert}
@@ -354,13 +494,13 @@ const StudentManagePage = () => {
                         type="message"
                         buttonCancel={
                             <Button
-                                // onClick={() => handleCloseModal('addActivity')}
+                                onClick={() => formikStudent.resetForm()}
                                 hiddenParent="addActivity" variant="btn-secondary" type="button">
-                                Hủy
+                                Reset
                             </Button>
                         }
                         buttonConfirm={<Button
-                            // onClick={() => formikActivity.submitForm()}
+                            onClick={() => formikStudent.submitForm()}
                             variant="btn-primary"
                             icon={<FontAwesomeIcon icon={faPlus} />}
                             size="text-sm w-20"
@@ -373,7 +513,7 @@ const StudentManagePage = () => {
                         width="w-full md:max-w-6xl h-full"
                         title={`Cập nhật sinh viên`}
                         content={
-                            <StudentModal />
+                            <StudentModal formik={formikStudent} />
                         }
                         positionButton="end"
                         isOpen={isModalOpenUpdate}
@@ -413,6 +553,12 @@ const StudentManagePage = () => {
                         type="message"
                     >
                     </Modal>
+                    <ModalConfirm
+                        isOpen={isConfirmOpen}
+                        onClose={closeConfirm}
+                        onConfirm={confirmAction}
+                        question={confirmQuestion}
+                    />
                 </div>
 
             </div>

@@ -58,7 +58,7 @@ const Modal: React.FC<ModalProps> = ({
             {content}
           </div> : <>{content}</>}
         {/* modal footer */}
-        <div className={`flex ${buttonPositionClass} p-6 m-3 space-x-2 rounded-b `}>
+        <div className={`flex ${buttonPositionClass} mb-6 me-6 space-x-2 rounded-b `}>
           {buttonCancel}
           {buttonConfirm}
         </div>
