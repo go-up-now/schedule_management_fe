@@ -25,8 +25,6 @@ const useHoverModal = <T,>(getPosition: (rect: DOMRect) => { top: number, left: 
 
   const handleMouseEnter = (value: T, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     openModal(value, event);
-    console.log("event: ", event)
-
   };
 
 

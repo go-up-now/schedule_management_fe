@@ -16,9 +16,14 @@ const createStudentAPI = (student) => {
     return axios.post('/api/students', student)
 }
 
+const updateStudentAPI = (id, student) => {
+    return axios.put(`/api/students/${id}`, student)
+}
+
 export {
     getAllStudents,
     cancelRegisteredClazz,
     getStudentMyInforAPI,
-    createStudentAPI
+    createStudentAPI,
+    updateStudentAPI
 }

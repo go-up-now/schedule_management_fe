@@ -10,6 +10,9 @@ interface StudentFormProps {
     formik: FormikProps<any>;
     areaOption?: Array<{ value: string | number | boolean | undefined, label: string | number, disable?: boolean, valueClassName?: string }>;
     educationProgramOption?: Array<{ value: string | number | boolean | undefined, label: string | number, disable?: boolean, valueClassName?: string }>;
+    disable?: boolean;
+    hidden?: boolean;
+    validateSemester?: boolean;
 }
 
 export const StudentSchema = Yup.object().shape({
@@ -25,7 +28,6 @@ export const StudentSchema = Yup.object().shape({
                     : true
                 : true;
         }),
-    semester: Yup.string().required("Vui lòng chọn học kỳ"),
     education_program: Yup.string()
         .required("Vui lòng chọn CTĐT"),
     user: Yup.object().shape({
@@ -34,7 +36,8 @@ export const StudentSchema = Yup.object().shape({
         firstName: Yup.string().required("Vui lòng nhập tên sinh viên"),
         email: Yup.string().required("Vui lòng nhập email")
             .email('Email không hợp lệ'),
-        password: Yup.string().required("Vui lòng nhập mật khẩu")
+        password: Yup.string()
+            .required("Vui lòng nhập mật khẩu")
             .length(5, 'Mật khẩu phải ít nhất 5 ký tự'),
         phone: Yup.string().required("Vui lòng nhập số điện thoại")
             .matches(/^0[0-9]+$/, "Số điện thoại không hợp lệ")
@@ -48,16 +51,24 @@ export const StudentSchema = Yup.object().shape({
                 const today = new Date(); // Ngày hiện tại
                 return value ? differenceInYears(today, value) >= 18 : false; // Kiểm tra nếu tuổi >= 18
             }),
-        area: Yup.number().required("Vui lòng chọn khu vực"),
+        area: Yup.string().required("Vui lòng chọn khu vực"),
         gender: Yup.number()
             .required("Vui lòng chọn giới tính"),
         description: Yup.string().nullable(),
     })
 });
 
-export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, educationProgramOption }) => {
+export const StudentModal: React.FC<StudentFormProps> = ({
+    formik,
+    areaOption,
+    educationProgramOption,
+    disable = false,
+    hidden,
+    validateSemester = false,
+}) => {
     const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
     const [warningMessage, setWarningMessage] = useState<string | null>(null);
+    const [semesterValue, setSemesterValue] = useState<string | null>(null);
 
     const openSamplePageInNewTab = () => {
         window.open('https://res.cloudinary.com/deeekoc3r/image/upload/v1728731987/hinhcv_iqkoqs.jpg', '_blank');
@@ -91,28 +102,57 @@ export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, e
     };
 
     // Tạo tự động semester theo year
-    let semesters = [
-        { value: 'SPRING ', label: 'Spring ', index: 1 },
-        { value: 'SUMMER ', label: 'Summer ', index: 2 },
-        { value: 'FALL ', label: 'Fall ', index: 3 },
-        { value: 'SPRING ', label: 'Spring ', index: 4 },
-        { value: 'SUMMER ', label: 'Summer ', index: 5 },
-        { value: 'FALL ', label: 'Fall ', index: 6 }
+    // let semesters = [
+    //     { value: 'SPRING ', label: 'Spring ', index: 1 },
+    //     { value: 'SUMMER ', label: 'Summer ', index: 2 },
+    //     { value: 'FALL ', label: 'Fall ', index: 3 },
+    //     { value: 'SPRING ', label: 'Spring ', index: 4 },
+    //     { value: 'SUMMER ', label: 'Summer ', index: 5 },
+    //     { value: 'FALL ', label: 'Fall ', index: 6 }
+    // ]
+    let semester = [
+        {
+            value: formik.values.semester + " " + formik.values.year,
+            label: formik.values.semester + " " + formik.values.year
+        }
     ]
 
-    let date = new Date();
-    let currentYear = date.getFullYear();
+    let semesters = [
+        {
+            value: semesterValue || "",
+            label: semesterValue || " Chọn học kỳ"
+        }
+    ]
 
-    for (let index = 0; index < semesters.length; index++) {
-        const semester = semesters[index];
-        if (semester.index < 4) {
-            semester.label += currentYear
-            semester.value += currentYear
+    const handleEnterSchool = (event, handleChange) => {
+        const date = new Date(event.target.value);
+        let month = date.getMonth() + 1;
+        let year = date.getFullYear();
+        let semester3 = "SPRING " + year;
+
+        if (1 <= month && month < 5) {
+            setSemesterValue("SPRING " + year);
+            semester3 = "SPRING " + year;
+        }
+        else if (5 <= month && month < 9) {
+            setSemesterValue("SUMMER " + year);
+            semester3 = "SUMMER " + year;
         }
         else {
-            semester.label += currentYear + 1
-            semester.value += currentYear + 1
+            setSemesterValue("FALL " + year);
+            semester3 = "FALL " + year;
         }
+
+        // Gọi handleChange của Formik để cập nhật form
+        handleSemester(event, formik.handleChange, semester3);
+        handleChange(event);
+    };
+
+    const handleSemester = (event, handleChange, semester) => {
+        const [semester2, year2] = semesterValue ? semesterValue.split(' ') : semester.split(' '); // Tách thành 2 giá trị
+        formik.setFieldValue('semester', semester2); // Cập nhật vào Formik
+        formik.setFieldValue('year', year2); // Cập nhật vào Formik
+        handleChange(event);
     }
 
     return (
@@ -150,7 +190,7 @@ export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, e
                 <div className="w-full flex flex-wrap">
                     <div className="w-full mt-2 p-1">
                         <TextField
-                            label="Địa Chỉ"
+                            label="Quê Quán"
                             id="user.address"
                             width="w-full"
                             disable={false}
@@ -169,7 +209,7 @@ export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, e
                             id="user.area"
                             name="user.area"
                             defaultOptionValue={"Chọn Khu Vực"}
-                            defaultValue={formik.values.user.area || undefined}
+                            defaultValue={formik.values.user?.area || undefined}
                             customClassName={`w-full ${formik.touched.user?.area && formik.errors.user?.area && 'border-red-500'}`}
                             onChange={(value) => formik.setFieldValue('user.area', value.target.value)}
                         />
@@ -179,17 +219,20 @@ export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, e
                     </div>
                     <div className="w-full lg:w-6/12 p-1">
                         <SelectBox
-                            options={semesters}
+                            options={validateSemester ? semester : semesters}
                             id="semester"
                             name="semester"
+                            disable={true}
                             defaultOptionValue={"Chọn Học Kỳ"}
-                            // defaultValue={formik.values.semester || undefined}
+                            defaultValue={formik.values.semester + " " + formik.values.year || undefined}
                             customClassName={`w-full ${formik.touched.semester && formik.errors.semester && 'border-red-500'}`}
-                            onChange={(value) => {
-                                const [semester, year] = value.target.value.split(' '); // Tách thành 2 giá trị
-                                formik.setFieldValue('semester', semester); // Cập nhật vào Formik
-                                formik.setFieldValue('year', year); // Cập nhật vào Formik
-                            }}
+                            // onChange={(value) => {
+                            //     // handleSemester
+                            //     const [semester2, year2] = semesterValue ? semesterValue.split(' ') : ""; // Tách thành 2 giá trị
+                            //     formik.setFieldValue('semester', semester2); // Cập nhật vào Formik
+                            //     formik.setFieldValue('year', year2); // Cập nhật vào Formik
+                            // }}
+                            onChange={(e) => handleSemester(e, formik.handleChange, semester)}
                         />
                         {formik.errors.semester && formik.touched.semester && (
                             <div className='text-red-500'>{formik.errors.semester as string}</div>
@@ -237,7 +280,7 @@ export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, e
                         label="Mã Số Sinh Viên"
                         id="user.code"
                         width="w-full"
-                        disable={false}
+                        disable={disable}
                         type="text"
                         disableLabel={false}
                         className={`w-full ${formik.touched.user?.code && formik.errors.user?.code ? 'border-red-500' : ''}`}
@@ -284,7 +327,7 @@ export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, e
                         label="Email"
                         id="user.email"
                         width="w-full"
-                        disable={false}
+                        disable={disable}
                         type="text"
                         disableLabel={false}
                         className={`w-full ${formik.touched.user?.email && formik.errors.user?.email && 'border-red-500'}`}
@@ -299,7 +342,8 @@ export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, e
                         label="Mật Khẩu"
                         id="user.password"
                         width="w-full"
-                        disable={false}
+                        disable={disable}
+                        hidden={hidden}
                         type="password"
                         disableLabel={false}
                         className={`w-full ${formik.touched.user?.password && formik.errors.user?.password && 'border-red-500'}`}
@@ -350,6 +394,7 @@ export const StudentModal: React.FC<StudentFormProps> = ({ formik, areaOption, e
                         disableLabel={false}
                         className={`w-full ${formik.touched.enterSchool && formik.errors.enterSchool && 'border-red-500'}`}
                         {...formik.getFieldProps('enterSchool')}
+                        onChange={(e) => handleEnterSchool(e, formik.handleChange)}
                     />
                     {formik.errors.enterSchool && formik.touched.enterSchool && (
                         <div className='text-red-500'>{formik.errors.enterSchool as string}</div>

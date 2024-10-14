@@ -15,12 +15,13 @@ interface TextFieldProps {
     min?: number | string;
     disableLabel?: boolean;
     readOnly?: boolean; // chỉ cho phép đọc
-    required?: boolean
+    required?: boolean;
+    hidden?: boolean
 }
 
-export default function TextField({ id, label = "Label", value, width, className, name, required = false, onChange, disable = false, type = "text", max, min, disableLabel = false, readOnly }: TextFieldProps) {
+export default function TextField({ id, label = "Label", value, width, className, name, required = false, onChange, disable = false, type = "text", max, min, disableLabel = false, readOnly, hidden = false }: TextFieldProps) {
     return (
-        <div className={`${className}`}>
+        <div className={`${className} ${hidden && "hidden"}`}>
             <div className="flex flex-row">
                 <div className={(disable ? "bg-[#e7e9eb] cursor-not-allowed " : " bg-white ") + "shadow-md py-2 pe-3 border hover:border-[#434343] transition duration-300 rounded-lg col-span-3 " + width + " " + className}>
                     {disableLabel ? null : <p className="text-[#9A9A9A] text-xs pl-3">{label}:{required && <span className="text-red-500">*</span>}</p>}

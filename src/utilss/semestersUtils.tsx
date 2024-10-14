@@ -12,7 +12,10 @@ export const Semesters = ({ onChange }: Semester) => {
         { value: 'FALL ', label: 'Fall ', index: 3 },
         { value: 'SPRING ', label: 'Spring ', index: 4 },
         { value: 'SUMMER ', label: 'Summer ', index: 5 },
-        { value: 'FALL ', label: 'Fall ', index: 6 }
+        { value: 'FALL ', label: 'Fall ', index: 6 },
+        { value: 'SPRING ', label: 'Spring ', index: 7 },
+        { value: 'SUMMER ', label: 'Summer ', index: 8 },
+        { value: 'FALL ', label: 'Fall ', index: 9 }
     ]
 
     let date = new Date();
@@ -21,7 +24,11 @@ export const Semesters = ({ onChange }: Semester) => {
 
     for (let index = 0; index < semesters.length; index++) {
         const semester = semesters[index];
-        if (semester.index < 4) {
+        if (semester.index >= 7) {
+            semester.label += currentYear + 1
+            semester.value += currentYear + 1
+        }
+        else if (semester.index < 4) {
             semester.label += currentYear - 1
             semester.value += currentYear - 1
         }

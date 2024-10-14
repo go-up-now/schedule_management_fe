@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Tables from "../../../components/tables/Tables.tsx";
 import CardBox from "../../../components/CartBox.tsx";
 import { faEllipsis, faFile, faFileExport, faPlus, faPen, faUserCheck, faUserGroup, faUserXmark, faTrash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { getAllStudents, createStudentAPI } from "../../../services/StudentService.js";
+import { getAllStudents, createStudentAPI, updateStudentAPI } from "../../../services/StudentService.js";
 import { getAllAreas } from "../../../services/areaService.js";
 import { getAllMajors } from "../../../services/majorService.js";
 import useHoverModal from "../../../hooks/useHoverModal.ts";
@@ -106,6 +106,7 @@ const StudentManagePage = () => {
     const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
     const [isModalOpenConfirm, setIsModalConfirmOpen] = useState(false);
     const { isConfirmOpen, openConfirm, closeConfirm, confirmAction, confirmQuestion } = useConfirm();
+    const [isStudent, setIsStudent] = useState<TypeStudent | null>(null);
 
     const students: Student[] = listStudent.length > 0 ? listStudent : listStudent;
 
@@ -127,7 +128,7 @@ const StudentManagePage = () => {
                                 type="button"
                                 variant="btn-none"
                                 className="w-1 h-[2.4rem] text-zinc-400 w-full text-yellow-500"
-                                onClick={(event) => openModal(item, 'Sửa')}
+                                onClick={() => openModal(item, 'Sửa')}
                             >
                                 <FontAwesomeIcon icon={faPen} />
                             </Button>
@@ -137,7 +138,7 @@ const StudentManagePage = () => {
                                 type="button"
                                 variant="btn-none"
                                 className="w-1 h-[2.4rem] text-zinc-400 w-full text-orange-500"
-                                onClick={(event) => openModal(item, 'Xóa')}
+                                onClick={() => openModal(item, 'Xóa')}
                             >
                                 <FontAwesomeIcon icon={faTrash} />
                             </Button>
@@ -273,6 +274,8 @@ const StudentManagePage = () => {
         setIsModalOpenInsert(false);
         setIsModalOpenUpdate(false);
         setIsModalConfirmOpen(false);
+        setIsStudent(null);
+        formikStudent.resetForm();
     }
 
     const openModal = async (item, id) => {
@@ -280,6 +283,7 @@ const StudentManagePage = () => {
             setIsModalOpenInsert(true);
         }
         else if (id === 'Sửa') {
+            setIsStudent(item);
             setIsModalOpenUpdate(true);
         }
         else if (id === 'Xóa') {
@@ -289,27 +293,28 @@ const StudentManagePage = () => {
 
     const formikStudent = useFormik({
         initialValues: {
-            id: 0,
-            enterSchool: '',
-            semester: '',
-            education_program: '',
-            year: '',
+            id: isStudent ? isStudent.id : 0,
+            enterSchool: isStudent ? isStudent.enterSchool : '',
+            semester: isStudent ? isStudent.semester : '',
+            education_program: isStudent ? isStudent.education_program.code : '',
+            year: isStudent ? isStudent.year : '',
             user: {
-                code: '',
-                lastName: '',
-                firstName: '',
-                email: '',
-                password: '',
-                gender: '',
-                birthday: '',
-                phone: '',
-                address: '',
-                description: '',
-                area: '',
-                avatar: '',
-                status: true,
+                code: isStudent ? isStudent.user.code : '',
+                lastName: isStudent ? isStudent.user.lastName : '',
+                firstName: isStudent ? isStudent.user.firstName : '',
+                email: isStudent ? isStudent.user.email : '',
+                password: isStudent ? '12345' : '',
+                gender: isStudent ? isStudent.user.gender : '',
+                birthday: isStudent ? isStudent.user.birthday : '',
+                phone: isStudent ? isStudent.user.phone : '',
+                address: isStudent ? isStudent.user.address : '',
+                description: isStudent ? isStudent.user.description : '',
+                area: isStudent ? isStudent.user.area.id : '',
+                avatar: isStudent ? isStudent.user.avatar : '',
+                status: isStudent ? isStudent.user.status : true,
             },
         },
+        enableReinitialize: true,
         validationSchema: StudentSchema,
 
         onSubmit: async (values, { resetForm }) => {
@@ -321,13 +326,12 @@ const StudentManagePage = () => {
                 },
                 // enterSchool: formattedSelectedDate(new Date(values.enterSchool))
             };
-            console.log(values.id)
+
             const action = async () => {
+                console.log("123 ", values.id)
                 if (values.id === 0) {
                     try {
-                        console.log("data: ", formattedStudent);
                         const response = await createStudentAPI(formattedStudent);
-                        console.log(response);
                         if (response && response.data) {
                             if (response.data.code !== 200)
                                 toast.error(response.data.message)
@@ -345,19 +349,25 @@ const StudentManagePage = () => {
                         toast.error("Thêm sinh viên không thành công")
                     }
                 } else {
-                    // try {
-                    //     await handleUpdateActivity(formattedStudent);
-                    //     toast.success("Cập nhật hoạt động thành công")
-                    // } catch (error) {
-                    //     toast.error("Cập nhật hoạt động không thàn công")
-                    // }
-
+                    console.log("update")
+                    try {
+                        await updateStudentAPI(values.id, formattedStudent);
+                        let responseAllStudents = await getAllStudents();
+                        setListStudentAPI(responseAllStudents.data)
+                        setListStudent(responseAllStudents.data)
+                        const activeStudents = responseAllStudents.data.filter(item => item.user.status);
+                        setListActivityStudent(activeStudents);
+                        toast.success("Cập nhật sinh viên thành công")
+                    } catch (error) {
+                        toast.error("Cập nhật sinh viên không thành công")
+                    }
                 }
 
                 closeModal();
                 resetForm();
             };
-            openConfirm(action, "Bạn có chắc muốn thêm sinh viên này?");
+            values.id === 0 ? openConfirm(action, "Bạn có chắc muốn thêm sinh viên này?")
+                : openConfirm(action, "Bạn có chắc muốn cập nhật sinh viên này?")
             // toast.success("Đã thêm hoạt động mới")
         },
     });
@@ -474,10 +484,11 @@ const StudentManagePage = () => {
                             { value: true, label: 'Đang học' },
                             { value: false, label: 'Đã tốt nghiệp' }
                         ]}
-                        maxRow={5}
                         loading={isLoading}
                         advancedRowFilter
                     />
+
+                    {/* Thêm mới sinh viên */}
                     <Modal id={"CourseRegistraionModal"}
                         width="w-full md:max-w-6xl h-auto"
                         title={`Thêm mới sinh viên`}
@@ -509,11 +520,19 @@ const StudentManagePage = () => {
                         </Button>}
                     >
                     </Modal>
+
+                    {/* Cập nhật sinh viên */}
                     <Modal id={"CourseRegistraionModal"}
-                        width="w-full md:max-w-6xl h-full"
+                        width="w-full md:max-w-6xl h-auto"
                         title={`Cập nhật sinh viên`}
                         content={
-                            <StudentModal formik={formikStudent} />
+                            <StudentModal formik={formikStudent}
+                                disable={true}
+                                hidden={true}
+                                areaOption={areas}
+                                educationProgramOption={educationProgramOptions}
+                                validateSemester={true}
+                            />
                         }
                         positionButton="end"
                         isOpen={isModalOpenUpdate}
@@ -527,7 +546,7 @@ const StudentManagePage = () => {
                             </Button>
                         }
                         buttonConfirm={<Button
-                            // onClick={() => formikActivity.submitForm()}
+                            onClick={() => formikStudent.submitForm()}
                             variant="btn-primary"
                             icon={<FontAwesomeIcon icon={faPlus} />}
                             size="text-sm w-20"
@@ -536,6 +555,8 @@ const StudentManagePage = () => {
                         </Button>}
                     >
                     </Modal>
+
+                    {/* Xóa sinh viên */}
                     <Modal id={"denyConfirmModal"}
                         width="max-w-xl"
                         title={"Bạn muốn xóa sinh viên này?"}
