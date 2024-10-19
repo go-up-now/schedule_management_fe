@@ -5,8 +5,8 @@ import SelectBox from "../../../components/SelectBox.tsx"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Tables from "../../../components/tables/Tables.tsx";
 import CardBox from "../../../components/CartBox.tsx";
-import { faEllipsis, faFile, faFileExport, faPlus, faPen, faUserCheck, faUserGroup, faUserXmark, faTrash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { getAllStudents, createStudentAPI, updateStudentAPI } from "../../../services/StudentService.js";
+import { faEllipsis, faFile, faPlus, faPen, faUserCheck, faUserGroup, faUserXmark, faTrash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { getAllStudents, createStudentAPI, updateStudentAPI, deleteStudentAPI } from "../../../services/StudentService.js";
 import { getAllAreas } from "../../../services/areaService.js";
 import { getAllMajors } from "../../../services/majorService.js";
 import useHoverModal from "../../../hooks/useHoverModal.ts";
@@ -22,6 +22,7 @@ import ModalConfirm from '../../../components/ModalConfirm.tsx'
 import useConfirm from "../../../hooks/useConfirm";
 import { toast } from 'react-toastify';
 import { getAllEducationProgramAPI } from '../../../services/educationProgramService.js'
+import UploadExcelModal from '../../../components/excel/UpLoadExcel.tsx'
 
 interface User {
     id: number;
@@ -105,8 +106,10 @@ const StudentManagePage = () => {
     const [isModalOpenInsert, setIsModalOpenInsert] = useState(false);
     const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
     const [isModalOpenConfirm, setIsModalConfirmOpen] = useState(false);
+    const [isModalOpenExcel, setIsModalOpenExcel] = useState(false);
     const { isConfirmOpen, openConfirm, closeConfirm, confirmAction, confirmQuestion } = useConfirm();
     const [isStudent, setIsStudent] = useState<TypeStudent | null>(null);
+    const [isReLoadTable, setIsReLoadTable] = useState(false);
 
     const students: Student[] = listStudent.length > 0 ? listStudent : listStudent;
 
@@ -127,7 +130,7 @@ const StudentManagePage = () => {
                             <Button
                                 type="button"
                                 variant="btn-none"
-                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-yellow-500"
+                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-yellow-400"
                                 onClick={() => openModal(item, 'Sửa')}
                             >
                                 <FontAwesomeIcon icon={faPen} />
@@ -137,7 +140,7 @@ const StudentManagePage = () => {
                             <Button
                                 type="button"
                                 variant="btn-none"
-                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-orange-500"
+                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-orange-400"
                                 onClick={() => openModal(item, 'Xóa')}
                             >
                                 <FontAwesomeIcon icon={faTrash} />
@@ -214,16 +217,16 @@ const StudentManagePage = () => {
                 setListActivityStudent(activeStudents);
 
                 // load dssv theo khu vực của admin
-                if (userInfo && userInfo.user) {
-                    let userAreaId = userInfo.user.area.id
-                    let students = response.data.filter(student => userAreaId == student.user.area.id)
-                    setListStudent(students)
-                }
-                else if (userInfo) {
-                    let userAreaId = userInfo.area.id
-                    let students = response.data.filter(student => userAreaId == student.user.area.id)
-                    setListStudent(students)
-                }
+                // if (userInfo && userInfo.user) {
+                //     let userAreaId = userInfo.user.area.id
+                //     let students = response.data.filter(student => userAreaId == student.user.area.id)
+                //     setListStudent(students)
+                // }
+                // else if (userInfo) {
+                //     let userAreaId = userInfo.area.id
+                //     let students = response.data.filter(student => userAreaId == student.user.area.id)
+                //     setListStudent(students)
+                // }
             }
             setIsDataLoaded(true);
         } catch (error) {
@@ -274,6 +277,7 @@ const StudentManagePage = () => {
         setIsModalOpenInsert(false);
         setIsModalOpenUpdate(false);
         setIsModalConfirmOpen(false);
+        setIsModalOpenExcel(false);
         setIsStudent(null);
         formikStudent.resetForm();
     }
@@ -287,7 +291,11 @@ const StudentManagePage = () => {
             setIsModalOpenUpdate(true);
         }
         else if (id === 'Xóa') {
+            setIsStudent(item);
             setIsModalConfirmOpen(true);
+        }
+        else if (id === 'excel') {
+            setIsModalOpenExcel(true);
         }
     }
 
@@ -335,14 +343,15 @@ const StudentManagePage = () => {
                         if (response && response.data) {
                             if (response.data.code !== 200)
                                 toast.error(response.data.message)
-                            if (response.code === 200)
+                            if (response.code === 200) {
                                 toast.success("Thêm mới sinh viên thành công")
 
-                            let responseAllStudents = await getAllStudents();
-                            setListStudentAPI(responseAllStudents.data)
-                            setListStudent(responseAllStudents.data)
-                            const activeStudents = responseAllStudents.data.filter(item => item.user.status);
-                            setListActivityStudent(activeStudents);
+                                let responseAllStudents = await getAllStudents();
+                                setListStudentAPI(responseAllStudents.data)
+                                setListStudent(responseAllStudents.data)
+                                const activeStudents = responseAllStudents.data.filter(item => item.user.status);
+                                setListActivityStudent(activeStudents);
+                            }
                         }
                     } catch (error) {
                         console.log(error);
@@ -365,12 +374,104 @@ const StudentManagePage = () => {
 
                 closeModal();
                 resetForm();
+                setIsReLoadTable(!isReLoadTable);
             };
             values.id === 0 ? openConfirm(action, "Bạn có chắc muốn thêm sinh viên này?")
                 : openConfirm(action, "Bạn có chắc muốn cập nhật sinh viên này?")
             // toast.success("Đã thêm hoạt động mới")
         },
     });
+
+    const handleDelete = async () => {
+        if (isStudent) {
+            try {
+                let response = await deleteStudentAPI(isStudent.id);
+                console.log(response)
+                if (response && response.data) {
+                    if (response.data.code !== 200)
+                        toast.error("Xóa không thành công, sinh viên này đã đăng ký lớp học")
+                }
+                else if (response) {
+                    if (response.code === 200) {
+                        let responseAllStudents = await getAllStudents();
+
+                        setListStudentAPI(responseAllStudents.data)
+                        setListStudent(responseAllStudents.data)
+                        const activeStudents = responseAllStudents.data.filter(item => item.user.status);
+                        setListActivityStudent(activeStudents);
+                        setIsReLoadTable(!isReLoadTable);
+                        toast.success("Xóa sinh viên thành công")
+                    }
+                }
+                closeModal();
+            } catch (error) {
+                toast.error("Xóa sinh viên không thành công")
+            }
+        }
+    }
+
+    const data = [
+        { id: 1, name: 'John Doe', age: 30, profession: 'Developer' },
+        { id: 2, name: 'Jane Smith', age: 25, profession: 'Designer' }
+    ];
+
+    // Chuyển đổi list sv sang dữ liệu để export excel
+
+    const extractedData = listStudent.map(item => ({
+        id: item.id,
+        education_program: item.education_program.code, // Lấy mã chương trình học
+        enterSchool: item.enterSchool,
+        semester: item.semester,
+        year: item.year,
+        major: item.education_program.major.code,
+
+        code: item.user.code,
+        lastName: item.user.lastName,
+        firstName: item.user.firstName,
+        email: item.user.email,
+        gender: item.user.gender,
+        phone: item.user.phone,
+        birthday: item.user.birthday,
+        address: item.user.address,
+        area: item.user.area.name,
+    }));
+
+    const dataTemplate = [
+        {
+            education_program: "QTKD",
+            enterSchool: "2024-10-17",
+            semester: "FALL",
+            year: 2024,
+            major: "LOGISTICS",
+            area: "1",
+            code: "PS24050",
+            lastName: "Trần Văn",
+            firstName: "Hoàng",
+            email: "nguyenvana11@example.com",
+            password: "12345",
+            gender: 1,
+            phone: "0937583721",
+            birthday: "2000-10-10",
+            address: "Bình Định",
+        },
+        {
+            education_program: "QTKD",
+            enterSchool: "2024-10-31",
+            semester: "FALL",
+            year: 2024,
+            major: "LOGISTICS",
+            area: "2",
+            code: "PS28138",
+            lastName: "Nguyễn",
+            firstName: "Nghĩa",
+            email: "nghia123@gmail.com",
+            password: "12345",
+            gender: 1,
+            phone: "0969773217",
+            birthday: "2000-10-04",
+            address: "Bình Định",
+        }
+    ];
 
     useEffect(() => {
         handleAPI();
@@ -400,7 +501,7 @@ const StudentManagePage = () => {
         else if (isDataLoaded) {
             handleSelectBox(selectedArea, selectedSemester, selectedMajor)
         }
-    }, [selectedArea, isDataLoaded, selectedSemester, selectedMajor, userInfo]);
+    }, [selectedArea, isDataLoaded, selectedSemester, selectedMajor, userInfo, isReLoadTable]);
 
     return (
         <Container>
@@ -441,22 +542,11 @@ const StudentManagePage = () => {
                             />
                         </div>
                         <div className="columns-1">
-                            <Button
-                                type="button"
-                                variant="btn-none"
-                                className="bg-gray-300 p-2 w-full md:w-40 self-center"
+                            <Button className="flex items-center border shadow-md rounded-lg text-gray-600 hover:bg-gray-100" variant="btn-none"
+                                onClick={() => openModal('', 'excel')}
                             >
-                                <FontAwesomeIcon icon={faFile} /> Import file excel
-                            </Button>
-                        </div>
-                        <div className="columns-1">
-                            <Button
-                                type="button"
-                                size="xs"
-                                variant="btn-none"
-                                className="bg-gray-300 p-2 w-full md:w-40 self-center"
-                            >
-                                <FontAwesomeIcon icon={faFileExport} /> Export file excel
+                                <FontAwesomeIcon icon={faFile} className="mr-2  text-gray-600" />
+                                <span className="text-gray-600">Nhập/Xuất Excel</span>
                             </Button>
                         </div>
                         <div className="columns-1">
@@ -465,7 +555,7 @@ const StudentManagePage = () => {
                                 size="xs"
                                 variant="btn-none"
                                 className="bg-blue-500 p-2 w-full md:w-40 self-center"
-                                onClick={(event) => openModal('', 'insert')}
+                                onClick={() => openModal('', 'insert')}
                             >
                                 <FontAwesomeIcon icon={faPlus} /> Thêm sinh viên
                             </Button>
@@ -538,21 +628,16 @@ const StudentManagePage = () => {
                         isOpen={isModalOpenUpdate}
                         onClose={closeModal}
                         type="message"
-                        buttonCancel={
+                        buttonConfirm={
                             <Button
-                                // onClick={() => handleCloseModal('addActivity')}
-                                hiddenParent="addActivity" variant="btn-secondary" type="button">
-                                Hủy
-                            </Button>
-                        }
-                        buttonConfirm={<Button
-                            onClick={() => formikStudent.submitForm()}
-                            variant="btn-primary"
-                            icon={<FontAwesomeIcon icon={faPlus} />}
-                            size="text-sm w-20"
-                        >
-                            Lưu
-                        </Button>}
+                                onClick={() => formikStudent.submitForm()}
+                                variant="btn-primary"
+                                icon={<FontAwesomeIcon icon={faPlus} />}
+                                size="text-sm w-20"
+                                className='p-3'
+                            >
+                                Lưu
+                            </Button>}
                     >
                     </Modal>
 
@@ -566,7 +651,10 @@ const StudentManagePage = () => {
                         buttonCancel={<Button onClick={closeModal} hiddenParent="demoDate" variant="btn-secondary" type="button" size="text-sm px-6 py-3">Hủy</Button>}
                         buttonConfirm={
                             <Button
-                                variant="btn-primary" type="button" size="text-sm px-6 py-3">Xác Nhận
+                                variant="btn-primary" type="button" size="text-sm px-6 py-3"
+                                onClick={handleDelete}
+                            >
+                                Xác Nhận
                             </Button>
                         }
                         isOpen={isModalOpenConfirm}
@@ -574,6 +662,27 @@ const StudentManagePage = () => {
                         type="message"
                     >
                     </Modal>
+                    <Modal
+                        id="importExcel"
+                        title="Làm việc với excel"
+                        content={
+                            <UploadExcelModal
+                                onClose={closeModal}
+                                dataExport={extractedData}
+                                setListStudentAPI={setListStudentAPI}
+                                setListStudent={setListStudent}
+                                setListActivityStudent={setListActivityStudent}
+                                setIsReLoadTable={setIsReLoadTable}
+                                isReLoadTable={isReLoadTable}
+                                dataTemplate={dataTemplate}
+                                exportFileName="Danh sách sinh viên"
+                                exportFileNamePattern="Danh sách sinh viên mẫu để import"
+                                sheetName='DSSV'
+                            />
+                        }
+                        isOpen={isModalOpenExcel}
+                        onClose={closeModal}
+                    />
                     <ModalConfirm
                         isOpen={isConfirmOpen}
                         onClose={closeConfirm}

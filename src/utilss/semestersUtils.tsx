@@ -38,6 +38,7 @@ export const Semesters = ({ onChange }: Semester) => {
         }
     }
 
+    // Lấy học kỳ hiện tại
     let currentSemesterValue: string;
 
     if (1 <= currentMonth && currentMonth < 5) {

@@ -16,8 +16,16 @@ const createStudentAPI = (student) => {
     return axios.post('/api/students', student)
 }
 
+const importExcelStudentAPI = (students) => {
+    return axios.post('/api/students/import', students)
+}
+
 const updateStudentAPI = (id, student) => {
     return axios.put(`/api/students/${id}`, student)
+}
+
+const deleteStudentAPI = (id) => {
+    return axios.delete(`/api/students/${id}`)
 }
 
 export {
@@ -25,5 +33,7 @@ export {
     cancelRegisteredClazz,
     getStudentMyInforAPI,
     createStudentAPI,
-    updateStudentAPI
+    updateStudentAPI,
+    deleteStudentAPI,
+    importExcelStudentAPI
 }
