@@ -23,6 +23,7 @@ import useConfirm from "../../../hooks/useConfirm";
 import { toast } from 'react-toastify';
 import { getAllEducationProgramAPI } from '../../../services/educationProgramService.js'
 import UploadExcelModal from '../../../components/excel/UpLoadExcel.tsx'
+import Spinner from '../../../components/Spinner.tsx'
 
 interface User {
     id: number;
@@ -110,6 +111,8 @@ const StudentManagePage = () => {
     const { isConfirmOpen, openConfirm, closeConfirm, confirmAction, confirmQuestion } = useConfirm();
     const [isStudent, setIsStudent] = useState<TypeStudent | null>(null);
     const [isReLoadTable, setIsReLoadTable] = useState(false);
+    const [publicId, setPublicId] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const students: Student[] = listStudent.length > 0 ? listStudent : listStudent;
 
@@ -289,6 +292,8 @@ const StudentManagePage = () => {
         else if (id === 'Sửa') {
             setIsStudent(item);
             setIsModalOpenUpdate(true);
+            console.log("123 ", item)
+            setPublicId(getPublicIdFromUrl(item.user.avatar))
         }
         else if (id === 'Xóa') {
             setIsStudent(item);
@@ -297,6 +302,20 @@ const StudentManagePage = () => {
         else if (id === 'excel') {
             setIsModalOpenExcel(true);
         }
+    }
+
+    // Lấy public id từ url
+    function getPublicIdFromUrl(url) {
+        // Tách URL thành các phần theo dấu "/"
+        const parts = url.split('/');
+
+        // Public ID nằm ngay trước phần định dạng của file (ví dụ: .jpg, .png)
+        const publicIdWithExtension = parts[parts.length - 1];
+
+        // Tách public ID từ phần đuôi mở rộng (bỏ phần .jpg, .png...)
+        const publicId = publicIdWithExtension.split('.')[0];
+
+        return publicId;
     }
 
     const formikStudent = useFormik({
@@ -326,20 +345,46 @@ const StudentManagePage = () => {
         validationSchema: StudentSchema,
 
         onSubmit: async (values, { resetForm }) => {
-            const formattedStudent: TypeStudent = {
-                ...values,
-                user: {
-                    ...values.user,
-                    // birthday: formattedSelectedDate(new Date(values.user.birthday))
-                },
-                // enterSchool: formattedSelectedDate(new Date(values.enterSchool))
+            // const formattedStudent: TypeStudent = {
+            //     ...values,
+            //     user: {
+            //         ...values.user,
+            //     },
+            // };
+
+            // Tạo FormData
+            const formData = new FormData();
+
+            // Tạo bản sao user với avatar là chuỗi rỗng
+            const userWithoutAvatar = {
+                ...values.user,
+                avatar: '', // Thiết lập avatar thành chuỗi rỗng
             };
 
+            // Chuyển object student thành JSON và thêm vào FormData
+            const studentJson = JSON.stringify({
+                ...values,
+                user: userWithoutAvatar,
+            });
+            formData.append('student', studentJson);
+
+            // Thêm file ảnh vào FormData nếu có
+            if (values.user.avatar) {
+                if (typeof values.user.avatar === 'string') {
+                    formData.append('avatar', "");
+                }
+                else
+                    formData.append('avatar', values.user.avatar);
+            }
+            else {
+                formData.append('avatar', "");
+            }
+
             const action = async () => {
-                console.log("123 ", values.id)
+                setLoading(true); // Bắt đầu loading
                 if (values.id === 0) {
                     try {
-                        const response = await createStudentAPI(formattedStudent);
+                        const response = await createStudentAPI(formData);
                         if (response && response.data) {
                             if (response.data.code !== 200)
                                 toast.error(response.data.message)
@@ -358,9 +403,9 @@ const StudentManagePage = () => {
                         toast.error("Thêm sinh viên không thành công")
                     }
                 } else {
-                    console.log("update")
+                    formData.append('publicId', publicId);
                     try {
-                        await updateStudentAPI(values.id, formattedStudent);
+                        await updateStudentAPI(values.id, formData);
                         let responseAllStudents = await getAllStudents();
                         setListStudentAPI(responseAllStudents.data)
                         setListStudent(responseAllStudents.data)
@@ -371,7 +416,7 @@ const StudentManagePage = () => {
                         toast.error("Cập nhật sinh viên không thành công")
                     }
                 }
-
+                setLoading(false); // Kết thúc loading
                 closeModal();
                 resetForm();
                 setIsReLoadTable(!isReLoadTable);
@@ -603,10 +648,16 @@ const StudentManagePage = () => {
                         buttonConfirm={<Button
                             onClick={() => formikStudent.submitForm()}
                             variant="btn-primary"
-                            icon={<FontAwesomeIcon icon={faPlus} />}
+                            icon={!loading &&
+                                <FontAwesomeIcon icon={faPlus} />}
                             size="text-sm w-20"
                         >
-                            Lưu
+                            {loading ? (
+                                <>
+                                    <Spinner className="text-white" />
+                                </>
+                            ) : "Lưu"
+                            }
                         </Button>}
                     >
                     </Modal>
@@ -632,11 +683,18 @@ const StudentManagePage = () => {
                             <Button
                                 onClick={() => formikStudent.submitForm()}
                                 variant="btn-primary"
-                                icon={<FontAwesomeIcon icon={faPlus} />}
+                                icon={!loading &&
+                                    <FontAwesomeIcon icon={faPlus} />}
                                 size="text-sm w-20"
                                 className='p-3'
                             >
-                                Lưu
+                                {loading ? (
+                                    <>
+                                        <Spinner className="text-white" />
+                                    </>
+                                ) : "Lưu"
+                                }
+
                             </Button>}
                     >
                     </Modal>

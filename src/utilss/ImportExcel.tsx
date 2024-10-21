@@ -14,7 +14,7 @@ export const handleFileUpload = (file1, importExcelAPI, getAllObjectAPI, setList
 
         // Tổ chức lại dữ liệu để phù hợp với backend
         const formattedData = sheetData.map(item => ({
-            education_program: item.education_program_code,
+            education_program: item.education_program,
             enterSchool: item.enterSchool,
             semester: item.semester,
             year: item.year,

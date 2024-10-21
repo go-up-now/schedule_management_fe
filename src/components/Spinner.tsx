@@ -6,6 +6,8 @@ interface Spinner {
 
 export default function Spinner({ className }: Spinner) {
     return (
-        <FaCircleNotch className={`animate-spin w-8 h-8 fill-[#64748b] ` + className} />
+        <>
+            <FaCircleNotch className={`animate-spin w-5 h-5 ` + className} />
+        </>
     )
 }

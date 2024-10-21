@@ -12,16 +12,16 @@ const getStudentMyInforAPI = () => {
     return axios.get('/api/students/myInfor')
 }
 
-const createStudentAPI = (student) => {
-    return axios.post('/api/students', student)
+const createStudentAPI = (formData) => {
+    return axios.post('/api/students', formData)
 }
 
 const importExcelStudentAPI = (students) => {
     return axios.post('/api/students/import', students)
 }
 
-const updateStudentAPI = (id, student) => {
-    return axios.put(`/api/students/${id}`, student)
+const updateStudentAPI = (id, formData) => {
+    return axios.put(`/api/students/${id}`, formData)
 }
 
 const deleteStudentAPI = (id) => {
