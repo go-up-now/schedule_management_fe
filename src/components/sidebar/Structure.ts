@@ -10,65 +10,74 @@ const sidebarStructure = [
     {
         id: "user_list",
         title: "Quản lý người dùng",
-        name: "list",
+        name: "users",
         parent: true,
-        icon: "list",
+        icon: "users",
         child: [
             {
                 id: "student",
                 title: "Sinh viên",
-                name: "list.student",
+                name: "users.student",
                 link: "/sinh-vien",
                 icon: "dot"
             },
             {
                 id: "instructor",
-                title: "Quotation",
-                name: "list.instructor",
+                title: "Giảng viên",
+                name: "users.instructor",
                 link: "/giang-vien",
                 icon: "dot",
-            },
+            }
+        ]
+    },
+    {
+        id: "clazz-management",
+        title: "Quản lý lớp học",
+        name: "clazzManagement",
+        parent: true,
+        icon: "clazz",
+        child: [
             {
-                id: "purchase-request",
-                title: "Purchase Request",
-                name: "list.transaksi.pr",
-                link: "/purchase-request",
+                id: "clazz",
+                title: "Lớp học",
+                name: "clazzManagement.clazz",
+                link: "/lop-hoc",
                 icon: "dot"
             },
             {
-                id: "purchase-order",
-                title: "Purchase Order",
-                name: "list.transaksi.po",
-                link: "/purchase-order",
+                id: "clazz-open",
+                title: "Mở lớp",
+                name: "clazzManagement.clazz-open",
+                link: "/mo-lop",
                 icon: "dot"
             }
         ]
     },
     {
-        id: "schedule",
-        title: "Lịch học",
-        name: "schedule",
+        id: "study",
+        title: "Học tập",
+        name: "study",
         parent: true,
-        icon: "perusahaan",
+        icon: "study",
         child: [
             {
                 id: "course-registration",
-                title: "Đăng ký môn học",
-                name: "schedule.course-registration",
+                title: "Đăng ký lớp học",
+                name: "study.course-registration",
                 link: "/dang-ky-mon-hoc",
                 icon: "dot"
             },
             {
                 id: "schedule-child",
                 title: "Lịch học",
-                name: "schedule.schedule-child",
+                name: "study.schedule-child",
                 link: "/lich-hoc",
                 icon: "dot"
             },
             {
                 id: "exam-schedule",
                 title: "Lịch thi",
-                name: "schedule.exam-schedule",
+                name: "study.exam-schedule",
                 link: "/lich-thi",
                 icon: "dot"
             }

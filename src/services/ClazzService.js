@@ -8,7 +8,12 @@ const getAllClazzBySubject = (subjectId) => {
     return axios.get(`/api/classes/subject/${subjectId}`)
 }
 
+const getAllClazzAPI = () => {
+    return axios.get(`/api/classes`)
+}
+
 export {
     registerClazz,
-    getAllClazzBySubject
+    getAllClazzBySubject,
+    getAllClazzAPI
 }

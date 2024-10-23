@@ -2,8 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom"
 import Dashboard from "../pages/Dashboard.tsx"
 import NotFound from "../pages/NotFound.jsx"
 import StudentManagePage from "../pages/accountManagement/students/StudentManagePage.tsx"
+import ClazzManagementPage from "../pages/clazzManagement/ClazzManagementPage.tsx"
 import CourseRegistrationPage from "../pages/schedule/index.tsx"
-import { isAuthenticated, getUserScope } from '../utilss/authUtils.ts'
 
 const AppRouters = () => {
     return (
@@ -13,6 +13,7 @@ const AppRouters = () => {
                 <>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/sinh-vien" element={<StudentManagePage />} />
+                    <Route path="/lop-hoc" element={<ClazzManagementPage />} />
                     <Route path="/dang-ky-mon-hoc" element={<CourseRegistrationPage />} />
                     <Route path="*" element={<NotFound />} />
                 </>
