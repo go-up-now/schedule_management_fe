@@ -38,7 +38,6 @@ const Tables = <T extends object>({
     const [filteredData, setFilteredData] = useState(data);
 
     useEffect(() => {
-        console.log("check: ", data)
         setFilteredData(
             // data.filter((item) =>
             //     (selectedFilter === '' || Object.values(item).some((val) => val?.toString().includes(selectedFilter))) &&

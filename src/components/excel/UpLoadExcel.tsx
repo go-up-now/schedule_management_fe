@@ -5,20 +5,24 @@ import Button from '../../components/Button.tsx'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from 'react'
 import { faFile, faFileExport } from '@fortawesome/free-solid-svg-icons';
-import { getAllStudents, importExcelStudentAPI } from "../../services/StudentService.js";
 
 const UploadExcelModal = ({
     onClose,
     dataExport,
-    setListStudentAPI,
-    setListStudent,
-    setListActivityStudent,
+    setListAPI,
+    setList,
+    setListActivity,
+    setListUnActivity,
     setIsReLoadTable,
     isReLoadTable,
     dataTemplate,
     exportFileName,
     exportFileNamePattern,
-    sheetName
+    sheetName,
+    getAllObject,
+    importExcelAPI,
+    disable = false,
+    isUser = false,
 }) => {
     // export excel activity
     const handleExportActivitiesToExcel = () => {
@@ -78,7 +82,9 @@ const UploadExcelModal = ({
         formData.append("file", file);
         console.log("Sending FormData:", file);
 
-        handleFileUpload(file, importExcelStudentAPI, getAllStudents, setListStudentAPI, setListStudent, setListActivityStudent, setIsReLoadTable, isReLoadTable)
+        handleFileUpload(file, importExcelAPI, getAllObject,
+            setListAPI, setList, setListActivity, setListUnActivity, setIsReLoadTable,
+            isReLoadTable, disable, isUser)
         onClose();
     };
 

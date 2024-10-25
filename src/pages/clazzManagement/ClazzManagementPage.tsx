@@ -5,8 +5,8 @@ import SelectBox from "../../components/SelectBox.tsx"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Tables from "../../components/tables/Tables.tsx";
 import CardBox from "../../components/CartBox.tsx";
-import { faEllipsis, faFile, faPlus, faPen, faUserCheck, faUserGroup, faUserXmark, faTrash, faCircleExclamation, faSchoolFlag, faSchoolCircleCheck, faSchoolLock } from '@fortawesome/free-solid-svg-icons';
-import { getAllClazzAPI } from "../../services/ClazzService.js";
+import { faEllipsis, faFile, faPlus, faPen, faTrash, faCircleExclamation, faSchoolFlag, faSchoolCircleCheck, faSchoolLock } from '@fortawesome/free-solid-svg-icons';
+import { getAllClazzAPI, createClazzAPI, updateClazzAPI, deleteClazzAPI, importExcelClazzAPI } from "../../services/ClazzService.js";
 import { getAllAreas } from "../../services/areaService.js";
 import { getAllSpecializationAPI } from "../../services/SpecializationService.js";
 import useHoverModal from "../../hooks/useHoverModal.ts";
@@ -24,17 +24,14 @@ import { toast } from 'react-toastify';
 import { getAllEducationProgramAPI } from '../../services/educationProgramService.js'
 import UploadExcelModal from '../../components/excel/UpLoadExcel.tsx'
 import Spinner from '../../components/Spinner.tsx'
+import { getAllSubjectAPI } from '../../services/SubjectSerivce.js'
+import { getAllInstructorByAreaAPI } from '../../services/instructorService.js'
 
 interface Subject {
     id: number;
     code: string;
     name: string;
     specialization: Specialization;
-}
-
-interface Specialization {
-    code: string;
-    name: string;
 }
 
 interface Room {
@@ -46,24 +43,19 @@ interface Clazz {
     id: number;
     code: string;
     onlineLink: string;
-    quantity: number;
-    block: number;
+    quantity: number | string;
+    block: number | string;
     semester: string;
-    year: number;
+    year: number | string;
     dayOfWeek: string;
     startTime: string;
     endTime: string;
     status: boolean;
     instructorCode: string;
-    shift: string;
+    shift: string | number;
     activityStatus: string;
     subject: Subject;
     room: Room;
-}
-
-interface Area {
-    id: string;
-    name: string;
 }
 
 interface EducationProgram {
@@ -71,38 +63,36 @@ interface EducationProgram {
     name: string;
 }
 
-// interface TypeClazz {
-//     id: number,
-//     enterSchool: string;
-//     semester: string;
-//     education_program: string;
-//     year: string;
-//     user: {
-//         code: string;
-//         lastName: string;
-//         firstName: string;
-//         email: string;
-//         password: string;
-//         gender: string;
-//         birthday: string;
-//         phone: string;
-//         address: string;
-//         description: string;
-//         area: string;
-//         avatar: string;
-//         status: boolean;
-//     }
-// }
+interface Instructor {
+    id: number;
+    user: User;
+    specialization: Specialization;
+}
 
+interface User {
+    code: string;
+    lastName: string;
+    firstName: string;
+    area: Area;
+}
+
+interface Specialization {
+    code: string;
+    name: string;
+}
+
+interface Area {
+    id: number | string;
+    name: string;
+}
 
 const ClazzManagementPage = () => {
-    const [listClazz, setListClazz] = useState([]);
+    const [listClazz, setListClazz] = useState<Clazz[]>([]);
     const [listClazzAPI, setListClazzAPI] = useState([]);
     const [listAreas, setListAreas] = useState<Area[]>([]);
     const [listSpecializaton, setListSpecializaton] = useState<Specialization[]>([]);
     const [listActivityClazz, setListActivityClazz] = useState([]);
     const [listUnActivityClazz, setListUnActivityClazz] = useState([]);
-    const [listEducationProgram, setListEducationProgram] = useState<EducationProgram[]>([]);
     const getPosition = (rect: DOMRect) => ({ top: rect.top + window.scrollY - 10, left: rect.left + rect.width - 200 });
     const { handleMouseEnter, targetValue } = useHoverModal(getPosition);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -119,8 +109,9 @@ const ClazzManagementPage = () => {
     const { isConfirmOpen, openConfirm, closeConfirm, confirmAction, confirmQuestion } = useConfirm();
     const [isClazz, setIsClazz] = useState<Clazz | null>(null);
     const [isReLoadTable, setIsReLoadTable] = useState(false);
-    const [publicId, setPublicId] = useState("");
     const [loading, setLoading] = useState(false);
+    const [listSubject, setListSubject] = useState<Subject[]>([]);
+    const [listInstructor, setListInstructor] = useState<Instructor[]>([]);
 
     const clazzs: Clazz[] = listClazz.length > 0 ? listClazz : listClazz;
 
@@ -132,6 +123,7 @@ const ClazzManagementPage = () => {
         <td key={`item-room-${item.id}`} className="px-6 py-4">{item.room.room}</td>,
         <td key={`item-shift-${item.id}`} className="px-6 py-4">{item.shift}</td>,
         <td key={`item-dayOfWeek-${item.id}`} className="px-6 py-4">{item.dayOfWeek}</td>,
+        <td key={`item-onlineLink-${item.id}`} className="px-6 py-4">{item.onlineLink}</td>,
         <td key={`item-activityStatus-${item.id}`}
             className={`px-6 py-4 font-bold 
         ${item.activityStatus === "Chưa hoạt động" ? "text-yellow-400" : item.activityStatus === "Đang hoạt động" ? "text-green-400" : "text-red-500"}`}
@@ -146,7 +138,7 @@ const ClazzManagementPage = () => {
                             <Button
                                 type="button"
                                 variant="btn-none"
-                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-yellow-400"
+                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-yellow-500"
                                 onClick={() => openModal(item, 'Sửa')}
                             >
                                 <FontAwesomeIcon icon={faPen} />
@@ -156,7 +148,7 @@ const ClazzManagementPage = () => {
                             <Button
                                 type="button"
                                 variant="btn-none"
-                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-orange-400"
+                                className="w-1 h-[2.4rem] text-zinc-400 w-full text-orange-500"
                                 onClick={() => openModal(item, 'Xóa')}
                             >
                                 <FontAwesomeIcon icon={faTrash} />
@@ -183,7 +175,9 @@ const ClazzManagementPage = () => {
             label: area.name
         }));
 
-    const areasOptions = listAreas.map(area => (
+    // Lấy khu vực theo user
+    const userArea = listAreas.filter(area => area.id === (userInfo && userInfo.user ? userInfo.user.area.id : userInfo ? userInfo.area.id : 1));
+    const areasOptions = userArea.map(area => (
         {
             value: area.id,
             label: area.name
@@ -192,18 +186,17 @@ const ClazzManagementPage = () => {
     // Thêm giá trị mặc định vào đầu mảng
     areasOptions.unshift({ value: "", label: "Theo khu vực" });
 
+    const specializatonOptions1 = listSpecializaton.map(special => ({
+        value: special.code,
+        label: special.name
+    }));
+
     const specializatonOptions = listSpecializaton.map(special => ({
         value: special.code,
         label: special.name
     }));
     // Thêm giá trị mặc định vào đầu mảng
     specializatonOptions.unshift({ value: "", label: "Theo bộ môn" });
-
-    const educationProgramOptions = listEducationProgram.map(area => (
-        {
-            value: area.code,
-            label: area.name
-        }));
 
     const handleAPI = async () => {
         // get specialization
@@ -217,12 +210,6 @@ const ClazzManagementPage = () => {
             setListAreas(responseAreas.data)
         }
 
-        // get education programs
-        let responseEducationPrograms = await getAllEducationProgramAPI();
-        if (responseEducationPrograms && responseEducationPrograms.data) {
-            setListEducationProgram(responseEducationPrograms.data)
-        }
-
         // GET clazzz
         setIsLoading(true)
         try {
@@ -232,26 +219,26 @@ const ClazzManagementPage = () => {
                 setListClazzAPI(response.data)
                 const activeClazz = response.data.filter(item => item.activityStatus === 'Đang hoạt động');
                 setListActivityClazz(activeClazz);
-                const unActiveClazz = response.data.filter(item => item.activityStatus === 'Ngừng hoạt động');
+                const unActiveClazz = response.data.filter(item => item.activityStatus === 'Chưa hoạt động');
                 setListUnActivityClazz(unActiveClazz);
-
-                // load dssv theo khu vực của admin
-                // if (userInfo && userInfo.user) {
-                //     let userAreaId = userInfo.user.area.id
-                //     let clazzs = response.data.filter(clazz => userAreaId == clazz.user.area.id)
-                //     setListClazz(clazzs)
-                // }
-                // else if (userInfo) {
-                //     let userAreaId = userInfo.area.id
-                //     let clazzs = response.data.filter(clazz => userAreaId == clazz.user.area.id)
-                //     setListClazz(clazzs)
-                // }
             }
             setIsDataLoaded(true);
         } catch (error) {
             console.log("Lỗi lấy thông tin sinh viên", error)
         } finally {
             setIsLoading(false)
+        }
+
+        // get all subjects
+        let responseSubjects = await getAllSubjectAPI();
+        if (responseSubjects && responseSubjects.data) {
+            setListSubject(responseSubjects.data)
+        }
+
+        // get all instructor by area
+        let responseInstructor = await getAllInstructorByAreaAPI(userInfo ? userInfo.area.id : 1);
+        if (responseInstructor && responseInstructor.data) {
+            setListInstructor(responseInstructor.data)
         }
     }
 
@@ -352,9 +339,9 @@ const ClazzManagementPage = () => {
         else if (id === 'Sửa') {
             setIsClazz(item);
             setIsModalOpenUpdate(true);
-            setPublicId(getPublicIdFromUrl(item.user.avatar))
         }
         else if (id === 'Xóa') {
+            console.log("delete: ", item)
             setIsClazz(item);
             setIsModalConfirmOpen(true);
         }
@@ -363,27 +350,13 @@ const ClazzManagementPage = () => {
         }
     }
 
-    // Lấy public id từ url
-    function getPublicIdFromUrl(url) {
-        // Tách URL thành các phần theo dấu "/"
-        const parts = url.split('/');
-
-        // Public ID nằm ngay trước phần định dạng của file (ví dụ: .jpg, .png)
-        const publicIdWithExtension = parts[parts.length - 1];
-
-        // Tách public ID từ phần đuôi mở rộng (bỏ phần .jpg, .png...)
-        const publicId = publicIdWithExtension.split('.')[0];
-
-        return publicId;
-    }
-
     const formikClazz = useFormik({
         initialValues: {
             id: isClazz ? isClazz.id : 0,
             code: isClazz ? isClazz.code : '',
             onlineLink: isClazz ? isClazz.onlineLink : '',
             quantity: isClazz ? isClazz.quantity : '',
-            block: isClazz ? isClazz.block : 1,
+            block: isClazz ? isClazz.block : '',
             semester: isClazz ? isClazz.semester : '',
             year: isClazz ? isClazz.year : '',
             dayOfWeek: isClazz ? isClazz.dayOfWeek : '',
@@ -395,110 +368,77 @@ const ClazzManagementPage = () => {
             activityStatus: isClazz ? isClazz.activityStatus : 'Chưa hoạt động',
             subject: isClazz ? isClazz.subject.code : '',
             room: isClazz ? isClazz.room.room : '',
-
-            // id: isClazz ? isClazz.id : 0,
-            // enterSchool: isClazz ? isClazz.enterSchool : '',
-            // semester: isClazz ? isClazz.semester : '',
-            // education_program: isClazz ? isClazz.education_program.code : '',
-            // year: isClazz ? isClazz.year : '',
-            // user: {
-            //     code: isClazz ? isClazz.user.code : '',
-            //     lastName: isClazz ? isClazz.user.lastName : '',
-            //     firstName: isClazz ? isClazz.user.firstName : '',
-            //     email: isClazz ? isClazz.user.email : '',
-            //     password: isClazz ? '12345' : '',
-            //     gender: isClazz ? isClazz.user.gender : '',
-            //     birthday: isClazz ? isClazz.user.birthday : '',
-            //     phone: isClazz ? isClazz.user.phone : '',
-            //     address: isClazz ? isClazz.user.address : '',
-            //     description: isClazz ? isClazz.user.description : '',
-            //     area: isClazz ? isClazz.user.area.id : '',
-            //     avatar: isClazz ? isClazz.user.avatar : '',
-            //     status: isClazz ? isClazz.user.status : true,
-            // },
+            specialization: isClazz ? isClazz.subject.specialization.code : '',
         },
         enableReinitialize: true,
         validationSchema: ClazzSchema,
 
         onSubmit: async (values, { resetForm }) => {
-            // const formattedClazz: TypeClazz = {
-            //     ...values,
-            //     user: {
-            //         ...values.user,
-            //     },
-            // };
-
-            // Tạo FormData
-            const formData = new FormData();
-
-            // Tạo bản sao user với avatar là chuỗi rỗng
-            const userWithoutAvatar = {
-                ...values.user,
-                avatar: '', // Thiết lập avatar thành chuỗi rỗng
-            };
-
-            // Chuyển object clazz thành JSON và thêm vào FormData
-            const clazzJson = JSON.stringify({
+            const formattedClazz = {
                 ...values,
-                user: userWithoutAvatar,
-            });
-            formData.append('clazz', clazzJson);
-
-            // Thêm file ảnh vào FormData nếu có
-            if (values.user.avatar) {
-                if (typeof values.user.avatar === 'string') {
-                    formData.append('avatar', "");
-                }
-                else
-                    formData.append('avatar', values.user.avatar);
-            }
-            else {
-                formData.append('avatar', "");
-            }
+            };
 
             const action = async () => {
                 setLoading(true); // Bắt đầu loading
                 if (values.id === 0) {
+                    console.log("check, ", formattedClazz)
                     try {
-                        const response = await createClazzAPI(formData);
+                        const response = await createClazzAPI(formattedClazz);
                         if (response && response.data) {
                             if (response.data.code !== 200)
                                 toast.error(response.data.message)
                             if (response.code === 200) {
-                                toast.success("Thêm mới sinh viên thành công")
+                                toast.success("Thêm mới lớp học thành công")
 
-                                let responseAllClazzs = await getAllClazzs();
-                                setListClazzAPI(responseAllClazzs.data)
-                                setListClazz(responseAllClazzs.data)
-                                const activeClazzs = responseAllClazzs.data.filter(item => item.user.status);
-                                setListActivityClazz(activeClazzs);
+                                // Lấy ds clazz mới
+                                let responseAllClazz = await getAllClazzAPI();
+                                if (responseAllClazz && responseAllClazz.data) {
+                                    setListClazzAPI(responseAllClazz.data)
+                                    const activeClazz = responseAllClazz.data.filter(item => item.activityStatus === 'Đang hoạt động');
+                                    setListActivityClazz(activeClazz);
+                                    const unActiveClazz = responseAllClazz.data.filter(item => item.activityStatus === 'Chưa hoạt động');
+                                    setListUnActivityClazz(unActiveClazz);
+                                }
+                                closeModal();
+                                resetForm();
                             }
                         }
                     } catch (error) {
                         console.log(error);
-                        toast.error("Thêm sinh viên không thành công")
+                        toast.error("Thêm lớp học không thành công")
                     }
                 } else {
-                    formData.append('publicId', publicId);
                     try {
-                        await updateClazzAPI(values.id, formData);
-                        let responseAllClazzs = await getAllClazzs();
-                        setListClazzAPI(responseAllClazzs.data)
-                        setListClazz(responseAllClazzs.data)
-                        const activeClazzs = responseAllClazzs.data.filter(item => item.user.status);
-                        setListActivityClazz(activeClazzs);
-                        toast.success("Cập nhật sinh viên thành công")
+                        const response = await updateClazzAPI(formattedClazz, values.id);
+                        if (response && response.data) {
+                            if (response.data.code !== 200)
+                                toast.error(response.data.message)
+                            if (response.code === 200) {
+                                toast.success("Cập nhật lớp học thành công")
+
+                                // Lấy ds clazz mới
+                                let responseAllClazz = await getAllClazzAPI();
+                                if (responseAllClazz && responseAllClazz.data) {
+                                    setListClazzAPI(responseAllClazz.data)
+                                    const activeClazz = responseAllClazz.data.filter(item => item.activityStatus === 'Đang hoạt động');
+                                    setListActivityClazz(activeClazz);
+                                    const unActiveClazz = responseAllClazz.data.filter(item => item.activityStatus === 'Chưa hoạt động');
+                                    setListUnActivityClazz(unActiveClazz);
+                                }
+                                closeModal();
+                                resetForm();
+                            }
+                        }
                     } catch (error) {
-                        toast.error("Cập nhật sinh viên không thành công")
+                        console.log(error);
+                        toast.error("Cập nhật lớp học không thành công")
                     }
                 }
                 setLoading(false); // Kết thúc loading
-                closeModal();
-                resetForm();
                 setIsReLoadTable(!isReLoadTable);
             };
-            values.id === 0 ? openConfirm(action, "Bạn có chắc muốn thêm sinh viên này?")
-                : openConfirm(action, "Bạn có chắc muốn cập nhật sinh viên này?")
+            values.id === 0 ? openConfirm(action, "Bạn có chắc muốn thêm lớp học này?")
+                : openConfirm(action, "Bạn có chắc muốn cập nhật lớp học này?")
             // toast.success("Đã thêm hoạt động mới")
         },
     });
@@ -510,23 +450,26 @@ const ClazzManagementPage = () => {
                 console.log(response)
                 if (response && response.data) {
                     if (response.data.code !== 200)
-                        toast.error("Xóa không thành công, sinh viên này đã đăng ký lớp học")
+                        toast.error("Xóa lớp học không thành công")
                 }
                 else if (response) {
                     if (response.code === 200) {
-                        let responseAllClazzs = await getAllClazzs();
-
-                        setListClazzAPI(responseAllClazzs.data)
-                        setListClazz(responseAllClazzs.data)
-                        const activeClazzs = responseAllClazzs.data.filter(item => item.user.status);
-                        setListActivityClazz(activeClazzs);
-                        setIsReLoadTable(!isReLoadTable);
-                        toast.success("Xóa sinh viên thành công")
+                        // Lấy ds clazz mới
+                        let responseAllClazz = await getAllClazzAPI();
+                        if (responseAllClazz && responseAllClazz.data) {
+                            setListClazzAPI(responseAllClazz.data)
+                            const activeClazz = responseAllClazz.data.filter(item => item.activityStatus === 'Đang hoạt động');
+                            setListActivityClazz(activeClazz);
+                            const unActiveClazz = responseAllClazz.data.filter(item => item.activityStatus === 'Chưa hoạt động');
+                            setListUnActivityClazz(unActiveClazz);
+                            setIsReLoadTable(!isReLoadTable);
+                        }
+                        toast.success("Xóa lớp học thành công")
                     }
                 }
                 closeModal();
             } catch (error) {
-                toast.error("Xóa sinh viên không thành công")
+                toast.error("Xóa lớp học không thành công")
             }
         }
     }
@@ -538,59 +481,54 @@ const ClazzManagementPage = () => {
 
     // Chuyển đổi list sv sang dữ liệu để export excel
 
-    // const extractedData = listClazz.map(item => ({
-    //     id: item.id,
-    //     education_program: item.education_program.code, // Lấy mã chương trình học
-    //     enterSchool: item.enterSchool,
-    //     semester: item.semester,
-    //     year: item.year,
-    //     major: item.education_program.major.code,
-
-    //     code: item.user.code,
-    //     lastName: item.user.lastName,
-    //     firstName: item.user.firstName,
-    //     email: item.user.email,
-    //     gender: item.user.gender,
-    //     phone: item.user.phone,
-    //     birthday: item.user.birthday,
-    //     address: item.user.address,
-    //     area: item.user.area.name,
-    // }));
+    const extractedData = listClazz.map(item => ({
+        id: item.id,
+        code: item.code,
+        onlineLink: item.onlineLink,
+        quantity: item.quantity,
+        block: item.block,
+        semester: item.semester,
+        year: item.year,
+        dayOfWeek: item.dayOfWeek,
+        startTime: item.startTime,
+        endTime: item.endTime,
+        instructorCode: item.instructorCode,
+        shift: item.shift,
+        subject: item.subject.code,
+        room: item.room.room,
+        activityStatus: item.activityStatus,
+    }));
 
     const dataTemplate = [
         {
-            education_program: "QTKD",
-            enterSchool: "2024-10-17",
+            code: "DB1001",
+            onlineLink: "http://linkmau111",
+            quantity: 40,
+            block: 1,
             semester: "FALL",
             year: 2024,
-            major: "LOGISTICS",
-            area: "1",
-            code: "PS24050",
-            lastName: "Trần Văn",
-            firstName: "Hoàng",
-            email: "nguyenvana11@example.com",
-            password: "12345",
-            gender: 1,
-            phone: "0937583721",
-            birthday: "2000-10-10",
-            address: "Bình Định",
+            dayOfWeek: "2, 4, 6",
+            startTime: "2024-09-08",
+            endTime: "2024-11-22",
+            instructorCode: "tiennn1",
+            shift: 3,
+            subject: "COM2012",
+            room: "ONLINE",
         },
         {
-            education_program: "QTKD",
-            enterSchool: "2024-10-31",
-            semester: "FALL",
+            code: "WEB3021",
+            onlineLink: "",
+            quantity: 40,
+            block: 2,
+            semester: "SUMMER",
             year: 2024,
-            major: "LOGISTICS",
-            area: "2",
-            code: "PS28138",
-            lastName: "Nguyễn",
-            firstName: "Nghĩa",
-            email: "nghia123@gmail.com",
-            password: "12345",
-            gender: 1,
-            phone: "0969773217",
-            birthday: "2000-10-04",
-            address: "Bình Định",
+            dayOfWeek: "3, 5, 7",
+            startTime: "2024-11-03",
+            endTime: "2024-12-20",
+            instructorCode: "có hoặc không",
+            shift: 1,
+            subject: "WEB207",
+            room: "F202",
         }
     ];
 
@@ -630,7 +568,7 @@ const ClazzManagementPage = () => {
             <div className="w-full flex flex-wrap md:flex-nowrap py-3 gap-3">
                 <CardBox icon={faSchoolFlag} title="Tổng số lớp học" count={listClazzAPI.length} />
                 <CardBox icon={faSchoolCircleCheck} title="Đang hoạt động" count={listActivityClazz.length} />
-                <CardBox icon={faSchoolLock} title="Ngừng hoạt động" count={listUnActivityClazz.length} />
+                <CardBox icon={faSchoolLock} title="Chưa hoạt động" count={listUnActivityClazz.length} />
             </div>
 
             <div className="w-full bg-white p-4 shadow-md rounded-2xl">
@@ -642,6 +580,7 @@ const ClazzManagementPage = () => {
                                 id="areas"
                                 name="areas"
                                 disableDefaultOption={true}
+                                disable={true}
                                 options={areasOptions}
                                 defaultValue={userInfo && userInfo.user ? userInfo.user.area.id : userInfo ? userInfo.area.id : ""}
                                 onChange={event => setSelectedArea(event.target.value)}
@@ -699,7 +638,7 @@ const ClazzManagementPage = () => {
 
                 <div className="pt-8 overflow-x-auto">
                     <Tables
-                        headers={["Mã Lớp", "Môn Học", "Giảng Viên", "Phòng", "Ca học", "Ngày Học", "Trạng thái", ""]}
+                        headers={["Mã Lớp", "Môn Học", "Giảng Viên", "Phòng", "Ca học", "Ngày Học", "Link Online", "Trạng thái", ""]}
                         renderRow={renderRow}
                         data={clazzs}
                         advanced={true}
@@ -707,7 +646,7 @@ const ClazzManagementPage = () => {
                             { value: '', label: 'Tất cả' },
                             { value: 'Chưa hoạt động', label: 'Chưa hoạt động' },
                             { value: 'Đang hoạt động', label: 'Đang hoạt động' },
-                            { value: 'Ngừng hoạt động', label: 'Ngừng hoạt động' }
+                            { value: 'Chưa hoạt động', label: 'Chưa hoạt động' }
                         ]}
                         loading={isLoading}
                         advancedRowFilter
@@ -721,7 +660,10 @@ const ClazzManagementPage = () => {
                             <ClazzModal
                                 formik={formikClazz}
                                 areaOption={areas}
-                                educationProgramOption={educationProgramOptions}
+                                specializatonOptions={specializatonOptions1}
+                                hidden={true}
+                                listSubject={listSubject}
+                                listInstructor={listInstructor}
                             />
                         }
                         positionButton="end"
@@ -753,16 +695,18 @@ const ClazzManagementPage = () => {
                     </Modal>
 
                     {/* Cập nhật sinh viên */}
-                    {/* <Modal id={"CourseRegistraionModal"}
+                    <Modal id={"CourseRegistraionModal"}
                         width="w-full md:max-w-6xl h-auto"
-                        title={`Cập nhật sinh viên`}
+                        title={`Cập nhật lớp học`}
                         content={
-                            <ClazzModal formik={formikClazz}
+                            <ClazzModal
+                                formik={formikClazz}
                                 disable={true}
-                                hidden={true}
                                 areaOption={areas}
-                                educationProgramOption={educationProgramOptions}
                                 validateSemester={true}
+                                specializatonOptions={specializatonOptions1}
+                                listSubject={listSubject}
+                                listInstructor={listInstructor}
                             />
                         }
                         positionButton="end"
@@ -787,7 +731,7 @@ const ClazzManagementPage = () => {
 
                             </Button>}
                     >
-                    </Modal> */}
+                    </Modal>
 
                     {/* Xóa sinh viên */}
                     <Modal id={"denyConfirmModal"}
@@ -800,7 +744,7 @@ const ClazzManagementPage = () => {
                         buttonConfirm={
                             <Button
                                 variant="btn-primary" type="button" size="text-sm px-6 py-3"
-                            // onClick={handleDelete}
+                                onClick={handleDelete}
                             >
                                 Xác Nhận
                             </Button>
@@ -810,27 +754,30 @@ const ClazzManagementPage = () => {
                         type="message"
                     >
                     </Modal>
-                    {/* <Modal
+                    <Modal
                         id="importExcel"
                         title="Làm việc với excel"
                         content={
                             <UploadExcelModal
                                 onClose={closeModal}
                                 dataExport={extractedData}
-                                setListClazzAPI={setListClazzAPI}
-                                setListClazz={setListClazz}
-                                setListActivityClazz={setListActivityClazz}
+                                setListAPI={setListClazzAPI}
+                                setList={setListClazz}
+                                setListActivity={setListActivityClazz}
+                                setListUnActivity={setListUnActivityClazz}
                                 setIsReLoadTable={setIsReLoadTable}
                                 isReLoadTable={isReLoadTable}
                                 dataTemplate={dataTemplate}
-                                exportFileName="Danh sách sinh viên"
-                                exportFileNamePattern="Danh sách sinh viên mẫu để import"
-                                sheetName='DSSV'
+                                exportFileName="Danh sách lớp học"
+                                exportFileNamePattern="Danh sách lớp học mẫu để import"
+                                sheetName='DSLH'
+                                getAllObject={getAllClazzAPI}
+                                importExcelAPI={importExcelClazzAPI}
                             />
                         }
                         isOpen={isModalOpenExcel}
                         onClose={closeModal}
-                    /> */}
+                    />
                     <ModalConfirm
                         isOpen={isConfirmOpen}
                         onClose={closeConfirm}

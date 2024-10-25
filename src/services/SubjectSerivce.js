@@ -8,13 +8,12 @@ const getAllRegisteredSubjectByYearAndSemester = (semester, year, studentId) => 
     return axios.get(`/api/subjects/registered/${semester}/${year}/${studentId}`)
 }
 
-
-
-// const getMyInforAPI = () => {
-//     return axios.get('/api/students/myInfor')
-// }
+const getAllSubjectAPI = () => {
+    return axios.get('/api/subjects')
+}
 
 export {
     getAllSubjectByYearAndSemester,
-    getAllRegisteredSubjectByYearAndSemester
+    getAllRegisteredSubjectByYearAndSemester,
+    getAllSubjectAPI
 }

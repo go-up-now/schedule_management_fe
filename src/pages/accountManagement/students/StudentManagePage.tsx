@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Tables from "../../../components/tables/Tables.tsx";
 import CardBox from "../../../components/CartBox.tsx";
 import { faEllipsis, faFile, faPlus, faPen, faUserCheck, faUserGroup, faUserXmark, faTrash, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { getAllStudents, createStudentAPI, updateStudentAPI, deleteStudentAPI } from "../../../services/StudentService.js";
+import { getAllStudents, createStudentAPI, updateStudentAPI, deleteStudentAPI, importExcelStudentAPI } from "../../../services/StudentService.js";
 import { getAllAreas } from "../../../services/areaService.js";
 import { getAllMajors } from "../../../services/majorService.js";
 import useHoverModal from "../../../hooks/useHoverModal.ts";
@@ -427,6 +427,14 @@ const StudentManagePage = () => {
         },
     });
 
+    // xử lý khi imoport excel thành công
+    const handleImportDataSuccess = (responseAllStudents) => {
+        setListStudentAPI(responseAllStudents.data)
+        setListStudent(responseAllStudents.data)
+        const activeStudents = responseAllStudents.data.filter(item => item.user.status);
+        setListActivityStudent(activeStudents);
+    }
+
     const handleDelete = async () => {
         if (isStudent) {
             try {
@@ -483,7 +491,7 @@ const StudentManagePage = () => {
 
     const dataTemplate = [
         {
-            education_program: "QTKD",
+            education_program: "EP_LOGISTICS",
             enterSchool: "2024-10-17",
             semester: "FALL",
             year: 2024,
@@ -500,7 +508,7 @@ const StudentManagePage = () => {
             address: "Bình Định",
         },
         {
-            education_program: "QTKD",
+            education_program: "EP_LOGISTICS",
             enterSchool: "2024-10-31",
             semester: "FALL",
             year: 2024,
@@ -727,15 +735,19 @@ const StudentManagePage = () => {
                             <UploadExcelModal
                                 onClose={closeModal}
                                 dataExport={extractedData}
-                                setListStudentAPI={setListStudentAPI}
-                                setListStudent={setListStudent}
-                                setListActivityStudent={setListActivityStudent}
+                                setListAPI={setListStudentAPI}
+                                setList={setListStudent}
+                                setListActivity={setListActivityStudent}
+                                setListUnActivity
                                 setIsReLoadTable={setIsReLoadTable}
                                 isReLoadTable={isReLoadTable}
                                 dataTemplate={dataTemplate}
                                 exportFileName="Danh sách sinh viên"
                                 exportFileNamePattern="Danh sách sinh viên mẫu để import"
                                 sheetName='DSSV'
+                                getAllObject={getAllStudents}
+                                importExcelAPI={importExcelStudentAPI}
+                                isUser={true}
                             />
                         }
                         isOpen={isModalOpenExcel}

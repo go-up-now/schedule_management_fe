@@ -154,9 +154,11 @@ export const StudentModal: React.FC<StudentFormProps> = ({
     };
 
     const handleSemester = (event, handleChange, semester) => {
-        const [semester2, year2] = semesterValue ? semesterValue.split(' ') : semester.split(' '); // Tách thành 2 giá trị
+        // const [semester2, year2] = semesterValue ? semesterValue.split(' ') : semester.split(' '); // Tách thành 2 giá trị
+        const [semester2, year2] = semester.split(' '); // Tách thành 2 giá trị
         formik.setFieldValue('semester', semester2); // Cập nhật vào Formik
         formik.setFieldValue('year', year2); // Cập nhật vào Formik
+        setSemesterValue(semester);
         handleChange(event);
     }
 

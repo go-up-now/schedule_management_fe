@@ -13,6 +13,7 @@ interface SelectBoxProps {
     onBlur?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
     disableDefaultOption?: boolean;
     label?: string;
+    hidden?: boolean
 }
 
 export default function SelectBox({
@@ -28,6 +29,7 @@ export default function SelectBox({
     label,
     onBlur,
     onChange,
+    hidden = false,
 }: SelectBoxProps) {
     const [selectedValue, setSelectedValue] = useState<string | number | boolean>(defaultValue);
 
@@ -43,7 +45,7 @@ export default function SelectBox({
     }, [defaultValue]);
 
     return (
-        <div className='relative'>
+        <div className={`relative ${hidden && "hidden"}`}>
             <p className='absolute text-xs text-textSecondary left-5 top-1'>{label}</p>
             <select
                 id={id}
