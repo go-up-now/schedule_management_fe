@@ -20,7 +20,7 @@ const SubjectDetailPage = (props) => {
                         </div>
                     </label>
                 </div> */}
-                <div className="w-full lg:w-full p-1 mt-10 flex flex-wrap">
+                <div className="w-full lg:w-full p-1 flex flex-wrap">
                     <div className="w-full lg:w-6/12 p-1">
                         <TextField
                             label="Mã Môn Học"
@@ -51,8 +51,8 @@ const SubjectDetailPage = (props) => {
                     <div className="w-full lg:w-6/12 p-1">
                         <TextField
                             label="Số Tín Chỉ"
-                            id="start_date"
-                            name="start_date"
+                            id="credits"
+                            name="credits"
                             width="w-full"
                             disable={false}
                             type="text"
@@ -65,8 +65,8 @@ const SubjectDetailPage = (props) => {
                     <div className="w-full lg:w-6/12 p-1">
                         <TextField
                             label="Tên Lớp Học"
-                            id="end_date"
-                            name="end_date"
+                            id="clazzName"
+                            name="clazzName"
                             width="w-full"
                             disable={false}
                             type="text"
@@ -79,27 +79,27 @@ const SubjectDetailPage = (props) => {
                     <div className="w-full lg:w-6/12 p-1">
                         <TextField
                             label="Phòng Học"
-                            id="join_number"
-                            name="join_number"
+                            id="room"
+                            name="room"
                             width="w-full"
                             disable={false}
                             type="text"
                             disableLabel={false}
                             className="p-1"
-                            value={clazz.onlineLink ? clazz.onlineLink : clazz.room}
+                            value={clazz.onlineLink ? clazz.onlineLink : clazz.room ? clazz.room.room : clazz.room}
                             readOnly={true}
                         />
                     </div>
                     <div className="w-full lg:w-6/12 p-1">
                         <TextField
                             label="Ca Học"
-                            id="host_mark"
-                            name="host_mark"
+                            id="shift"
+                            name="shift"
                             width="w-full"
                             disable={false}
                             type="text"
                             disableLabel={false}
-                            value={clazz.shiftID}
+                            value={clazz.shift}
                             className="p-1"
                             readOnly={true}
                         />
@@ -107,13 +107,13 @@ const SubjectDetailPage = (props) => {
                     <div className="w-full lg:w-6/12 p-1">
                         <TextField
                             label="Số Lượng Sinh Viên"
-                            id="join_mark"
-                            name="join_mark"
+                            id="quantity"
+                            name="quantity"
                             width="w-full"
                             disable={false}
                             type="text"
                             disableLabel={false}
-                            value={clazz.students ? clazz.students.length + "/" + clazz.quantity : ""}
+                            value={clazz.studyIns ? clazz.studyIns.length + "/" + clazz.quantity : ""}
                             className="p-1"
                             readOnly={true}
                         />
@@ -121,8 +121,8 @@ const SubjectDetailPage = (props) => {
                     <div className="w-full lg:w-6/12 p-1">
                         <TextField
                             label="Học kỳ"
-                            id="type"
-                            name="type"
+                            id="semester"
+                            name="semester"
                             width="w-full"
                             disable={false}
                             type="text"
@@ -132,26 +132,25 @@ const SubjectDetailPage = (props) => {
                             readOnly={true}
                         />
                     </div>
-
                     <div className="w-full lg:w-6/12 p-1">
                         <TextField
-                            label="Ngày Bắt Đầu"
-                            id="place"
-                            name="place"
+                            label="Block"
+                            id="block"
+                            name="block"
                             width="w-full"
                             disable={false}
                             type="text"
                             disableLabel={false}
+                            value={clazz.block}
                             className="p-1"
-                            value={formattedSelectedDate(clazz.startTime)}
                             readOnly={true}
                         />
                     </div>
                     <div className=" w-full lg:w-6/12 p-1">
                         <TextField
                             label="Ngày Học Trong Tuần"
-                            id="description"
-                            name="description"
+                            id="dayOfWeek"
+                            name="dayOfWeek"
                             width="w-full"
                             type="text"
                             disable={false}
@@ -161,6 +160,36 @@ const SubjectDetailPage = (props) => {
                             readOnly={true}
                         />
                     </div>
+
+                    <div className="w-full lg:w-6/12 p-1">
+                        <TextField
+                            label="Ngày Bắt Đầu"
+                            id="startTime"
+                            name="startTime"
+                            width="w-full"
+                            disable={false}
+                            type="text"
+                            disableLabel={false}
+                            className="p-1"
+                            value={formattedSelectedDate(clazz.startTime)}
+                            readOnly={true}
+                        />
+                    </div>
+                    <div className="w-full lg:w-6/12 p-1">
+                        <TextField
+                            label="Ngày Kết Thúc"
+                            id="endTime"
+                            name="endTime"
+                            width="w-full"
+                            disable={false}
+                            type="text"
+                            disableLabel={false}
+                            className="p-1"
+                            value={formattedSelectedDate(clazz.endTime)}
+                            readOnly={true}
+                        />
+                    </div>
+
                 </div>
 
             </div>

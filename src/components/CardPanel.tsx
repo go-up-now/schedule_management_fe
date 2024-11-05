@@ -3,7 +3,7 @@ import Button from "./Button.tsx";
 import Modal from "../components/Modal.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { registerClazz } from '../services/ClazzService.js';
+import { registerClazz } from '../services/StudyInService.js';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
@@ -25,7 +25,6 @@ interface Props {
 
 export default function CardPanel({ clazz, room, shift, amount, dateStart, dateWeek, className = "", disableIconHeader = false, disabled = false, clazzId }: Props) {
     const [isModalOpenConfirm, setIsModalConfirmOpen] = useState(false);
-    const userInfo = useSelector((state) => state.user.userInfo);
     const isOpen = useSelector((state) => state.modal.isOpen);
     const dispatch = useDispatch();
 
@@ -34,7 +33,7 @@ export default function CardPanel({ clazz, room, shift, amount, dateStart, dateW
             setIsModalConfirmOpen(true);
         else {
             try {
-                let response = await registerClazz(id, userInfo.id);
+                let response = await registerClazz(id);
                 if (response && response.data && response.data.code !== 200) {
                     toast.error(response.data.message)
                 }

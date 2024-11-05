@@ -14,8 +14,8 @@ import { getAllSubjectByYearAndSemester, getAllRegisteredSubjectByYearAndSemeste
 import { useDispatch } from 'react-redux';
 import { setClazz, removeClazz } from "../../reducers/clazzSlice.tsx";
 import { useSelector } from 'react-redux';
-import { getAllClazzBySubject } from '../../services/ClazzService.js'
-import { cancelRegisteredClazz } from '../../services/StudentService.js'
+import { getInforDetailBySubjectAPI } from '../../services/ClazzService.js'
+import { cancelRegistrationClazz } from '../../services/StudyInService.js'
 import { toast } from "react-toastify";
 import { setModal } from '../../reducers/modalSlice.tsx'
 import { VND } from '../../utilss/convertNumberFormat.js'
@@ -29,6 +29,12 @@ interface Subject {
     semester: String;
     status: boolean;
     cost: number
+    specialization: Specialization
+}
+
+interface Specialization {
+    code: string;
+    name: string;
 }
 
 const CourseRegistrationPage = () => {
@@ -39,9 +45,10 @@ const CourseRegistrationPage = () => {
     const [listSubject2, setListSubject2] = useState([]);
     const [clazz, setClazzz] = useState([]);
     const [subject, setSubject] = useState<Subject[]>([]);
-    const [idSubject, setIdSubject] = useState(null);
+    const [subjectId, setSubjectId] = useState(null);
     const [costs, setCosts] = useState(0);
     const [credits, setCredits] = useState(0);
+
     const dispatch = useDispatch();
     const isOpen = useSelector((state) => state.modal.isOpen);
     const userInfo = useSelector((state) => state.user.userInfo);
@@ -60,46 +67,33 @@ const CourseRegistrationPage = () => {
         }
         else if (name === 'detail2') {
             setIsModalOpenDetail(true);
-            let response = await getAllClazzBySubject(item.id);
-            if (response && response.data && response.data.length > 0) {
-                for (let element of response.data) {
-                    for (let student of element.students) {
-                        if (student.id === userInfo.id) {
-                            setClazzz(element);
-                            setSubject(item);
-                        }
-                    }
-                };
+            let response = await getInforDetailBySubjectAPI(item.id);
+            console.log("response, ", response)
+            if (response && response.data) {
+                setClazzz(response.data);
+                setSubject(item);
             }
         }
         else if (name === 'cancel') {
             setIsModalConfirmOpen(true);
-            setIdSubject(item.id);
+            console.log(item)
+            setSubjectId(item.id);
         }
     }
 
+    // Hủy đăng ký lớp học
     const handleCancelSubject = async () => {
-        let response = await getAllClazzBySubject(idSubject);
-        if (response && response.data && response.data.length > 0) {
-            for (let element of response.data) {
-                for (let student of element.students) {
-                    if (student.id === userInfo.id) {
-                        try {
-                            let res = await cancelRegisteredClazz(element.id);
-                            dispatch(
-                                setModal({
-                                    isOpen: !isOpen
-                                })
-                            );
-                            setIsModalConfirmOpen(false);
-                            toast.success(res.message)
-                        } catch (error) {
-                            toast.error("Lỗi khi hủy đăng ký lớp học")
-                        }
-                        return;
-                    }
-                }
-            };
+        try {
+            let res = await cancelRegistrationClazz(subjectId);
+            dispatch(
+                setModal({
+                    isOpen: !isOpen
+                })
+            );
+            setIsModalConfirmOpen(false);
+            toast.success(res.message)
+        } catch (error) {
+            toast.error("Lỗi khi hủy đăng ký lớp học")
         }
     }
 
@@ -117,9 +111,9 @@ const CourseRegistrationPage = () => {
         <td key={`item-name-${item.id}`} className="px-6 py-4 font-bold">{item.name}</td>,
         <td key={`item-credit-${item.id}`} className="px-6 py-4">{item.credits}</td>,
         <td key={`item-year-${item.id}`} className="px-6 py-4">{VND.format(item.cost)}</td>,
-        <td key={`item-semester-${item.id}`} className="px-6 py-4">SPRING 2024</td>,
-        <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${item.status ? "text-green-400" : "text-red-500"}`}>
-            {item.status ? "Đã đăng ký" : "Chưa đăng ký"}</td>,
+        <td key={`item-semester-${item.id}`} className="px-6 py-4">{item.specialization.name}</td>,
+        // <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${item.status ? "text-green-400" : "text-red-500"}`}>
+        //     {item.status ? "Đã đăng ký" : "Chưa đăng ký"}</td>,
         <td key={`item-${item.id}`} className="px-6 py-4 text-center">
 
             <Popover
@@ -132,7 +126,7 @@ const CourseRegistrationPage = () => {
                                 className="w-1 h-[2.4rem] text-zinc-400 w-full"
                                 onClick={() => openModal("detail1", item)}
                             >
-                                Xem chi tiết
+                                Chi tiết
                             </Button>
                         </div>
                     </>
@@ -157,8 +151,6 @@ const CourseRegistrationPage = () => {
         <td key={`item-credit-${item.id}`} className="px-6 py-4">{item.credits}</td>,
         <td key={`item-year-${item.id}`} className="px-6 py-4">{VND.format(item.cost)}</td>,
         <td key={`item-semester-${item.id}`} className="px-6 py-4">SPRING 2024</td>,
-        <td key={`item-status-${item.id}`} className={`px-6 py-4 font-bold ${item.status ? "text-green-400" : "text-red-500"}`}>
-            {item.status ? "Đã thanh toán" : "Chưa thanh toán"}</td>,
         <td key={`item-${item.id}`} className="px-6 py-4 text-center">
             <Popover
                 content={
@@ -170,7 +162,7 @@ const CourseRegistrationPage = () => {
                                 className="w-1 h-[2.4rem] text-zinc-400 w-full"
                                 onClick={() => openModal("detail2", item)}
                             >
-                                Xem chi tiết
+                                Chi tiết
                             </Button>
                         </div>
                         <div className="hover:bg-gray-200 rounded-xl">
@@ -205,19 +197,20 @@ const CourseRegistrationPage = () => {
             content: (
                 <>
                     <Tables
-                        headers={["Mã Môn học", "Tên Môn Học", "Tín chỉ", "Học phí", "Học kỳ", "Trạng thái", ""]}
+                        headers={["Mã Môn học", "Tên Môn Học", "Tín chỉ", "Học phí", "Bộ Môn", ""]}
                         renderRow={renderRow}
                         data={subjects}
                         nonDataMessage="Không có môn học cần đăng ký"
                         advancedRowFilter
                         advanced={true}
+                        disableSelectBox={true}
                     />
                 </>
             )
         },
         {
             id: "2",
-            label: "Môn Học Đã Đăng Ký",
+            label: "Lớp Học Đã Đăng Ký",
             content: (
                 <>
                     <div className="flex flex-wrap justify-end mb-2">
@@ -237,7 +230,7 @@ const CourseRegistrationPage = () => {
                         </div>
                     </div>
                     <Tables
-                        headers={["Mã Môn học", "Tên Môn Học", "Tín chỉ", "Học phí", "Học kỳ", "Trạng thái", ""]}
+                        headers={["Mã Môn học", "Tên Môn Học", "Tín chỉ", "Học phí", "Học kỳ", ""]}
                         renderRow={renderRow1}
                         data={subjects1}
                         nonDataMessage="Bạn chưa đăng ký môn học nào"
@@ -254,43 +247,51 @@ const CourseRegistrationPage = () => {
     }, [isOpen])
 
     const handleGetAllSubjectByYearAndSemester = async () => {
-        let response = await getAllSubjectByYearAndSemester("spring", 2024, userInfo.id);
-        let responseRegistered = await getAllRegisteredSubjectByYearAndSemester("spring", 2024, userInfo.id);
+        if (userInfo) {
+            let response = await getAllSubjectByYearAndSemester();
+            let responseRegistered = await getAllRegisteredSubjectByYearAndSemester();
 
-        if (response && response.data) {
-            setListSubject(response.data)
-        }
-        if (responseRegistered && responseRegistered.data) {
-            setListSubject2(responseRegistered.data)
-        }
+            if (response && response.data) {
+                setListSubject(response.data)
+            }
+            if (responseRegistered && responseRegistered.data) {
+                setListSubject2(responseRegistered.data)
+            }
 
-        let costs = 0;
-        let credit = 0;
-        responseRegistered.data.forEach(subject => {
-            costs += subject.cost;
-            credit += Number(subject.credits);
-        });
-        console.log("checL:", credit)
-        setCosts(costs)
-        setCredits(credit)
+            let costs = 0;
+            let credit = 0;
+            responseRegistered.data.forEach(subject => {
+                costs += subject.cost;
+                credit += Number(subject.credits);
+            });
+
+            setCosts(costs)
+            setCredits(credit)
+        }
     }
 
     return (
         <Container>
-            <TitleHeader title="ĐĂNG KÝ MÔN HỌC" />
+            <TitleHeader title="ĐĂNG KÝ LỚP HỌC" />
             <div className="w-full bg-white p-4 shadow-md rounded-2xl">
                 <div className="flex flex-wrap justify-between">
                     <div>
-                        {/* {console.log(listSubject2)} */}
-                        {console.log(clazz)}
-                        <p className="text-[#9A9A9A] text-base self-center mr-3">Họ và tên: <strong>{userInfo.user.lastName + " " + userInfo.user.firstName}</strong></p>
-                        <p className="text-[#9A9A9A] text-base self-center mr-3">Mã số sinh viên: <strong>{userInfo.user.code}</strong></p>
-                        <p className="text-[#9A9A9A] text-base self-center mr-3">Chuyên ngành: <strong>Phát Triển Phần Mềm</strong></p>
+                        {userInfo && userInfo.user &&
+                            <>
+                                <p className="text-[#9A9A9A] text-base self-center mr-3">Họ và tên: <strong>{userInfo.user.lastName + " " + userInfo.user.firstName}</strong></p>
+                                <p className="text-[#9A9A9A] text-base self-center mr-3">Mã số sinh viên: <strong>{userInfo.user.code}</strong></p>
+                                <p className="text-[#9A9A9A] text-base self-center mr-3">Chuyên ngành: <strong>{userInfo.education_program.major.name}</strong></p>
+                            </>
+                        }
                     </div>
                     <div>
-                        <p className="text-[#9A9A9A] text-base self-center mr-3">Tổng số tín chỉ đăng ký: <strong>{credits}</strong></p>
-                        <p className="text-[#9A9A9A] text-base self-center mr-3">Tổng số tiền phải nộp: <strong>{VND.format(costs)}</strong></p>
-                        <p className="text-[#9A9A9A] text-base self-center mr-3 text-red-500"><strong>Số tín chỉ đăng ký phải nhiều hơn 10 tín chỉ</strong></p>
+                        {userInfo && userInfo.user &&
+                            <>
+                                <p className="text-[#9A9A9A] text-base self-center mr-3">Tổng số tín chỉ đăng ký: <strong>{credits}</strong></p>
+                                <p className="text-[#9A9A9A] text-base self-center mr-3">Tổng số tiền phải nộp: <strong>{VND.format(costs)}</strong></p>
+                                <p className="text-[#9A9A9A] text-base self-center mr-3 text-red-500"><strong>Số tín chỉ đăng ký phải nhiều hơn 10 tín chỉ</strong></p>
+                            </>
+                        }
                     </div>
                 </div>
 
@@ -301,11 +302,6 @@ const CourseRegistrationPage = () => {
                         inactiveClassName="text-gray-500 hover:text-gray-600 hover:border-gray-300"
                     >
                     </TabPanel>
-                    {/* <Tables
-                        headers={["Mã Môn học", "Tên Môn Học", "Tín chỉ", "Năm học", "Học kỳ", "Trạng thái", ""]}
-                        renderRow={renderRow}
-                        data={instructors}
-                    /> */}
                 </div>
 
             </div>
@@ -327,7 +323,7 @@ const CourseRegistrationPage = () => {
             </Modal>
             <Modal id={"CourseRegistraionModal"}
                 width="w-full md:max-w-6xl h-full"
-                title={`Xem chi tiết lớp học`}
+                title={`Chi tiết lớp học`}
                 content={
                     <SubjectDetailPage
                         clazz={clazz}

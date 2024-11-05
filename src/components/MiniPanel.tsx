@@ -29,15 +29,17 @@ export default function MiniPanel({ name, code, credit, className = "", disableI
         if (response && response.data && response.data.length > 0) {
             setClazzList(response.data)
         }
+        // console.log("check, ", response)
     }
 
     const handlShift = async (shift) => {
         let list = [];
         clazzList.forEach(element => {
-            if (element.shiftID === shift) {
+            if (element.shift === shift) {
                 list.push(element);
             }
         });
+
         if (list.length > 0) {
             dispatch(setClazz({
                 clazzInfo: list,

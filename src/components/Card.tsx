@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 export default function CardBasicExample(): JSX.Element {
     const clazzInfo = useSelector((state) => state.clazz.clazzInfo);
+
     return (
         <>
             <div
@@ -13,8 +14,9 @@ export default function CardBasicExample(): JSX.Element {
                 <div className='max-h-[27.5rem] overflow-auto'>
                     {clazzInfo ?
                         clazzInfo.map((item, index) =>
-                            <CardPanel clazz={item.code} room={item.room} shift={item.shiftID}
-                                amount={item.students.length + "/" + item.quantity}
+                            <CardPanel
+                                clazz={item.code} room={item.room.room} shift={item.shift}
+                                amount={item.studyIns.length + "/" + item.quantity}
                                 dateStart={item.startTime} dateWeek={item.dayOfWeek}
                                 clazzId={item.id}
                             />

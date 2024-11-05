@@ -1,11 +1,11 @@
 import axios from "./Customize-axios";
 
-const getAllSubjectByYearAndSemester = (semester, year, studentId) => {
-    return axios.get(`/api/subjects/${semester}/${year}/${studentId}`)
+const getAllSubjectByYearAndSemester = () => {
+    return axios.get(`/api/subjects/by-semester-year`)
 }
 
-const getAllRegisteredSubjectByYearAndSemester = (semester, year, studentId) => {
-    return axios.get(`/api/subjects/registered/${semester}/${year}/${studentId}`)
+const getAllRegisteredSubjectByYearAndSemester = () => {
+    return axios.get(`/api/subjects/registered`)
 }
 
 const getAllSubjectAPI = () => {

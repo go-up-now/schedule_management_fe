@@ -4,6 +4,8 @@ import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
 import { sidebarStructure } from "./Structure.ts";
 import { Link } from 'react-router-dom';
+import { getUserScope } from '../../utilss/authUtils.ts'
+import { ROLE } from '../../enum/Role.tsx'
 
 interface SidebarProps {
   setExpand: (value: boolean) => void;
@@ -24,6 +26,8 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
 
   const [isExpand, setIsExpand] = useState(true);
   const [isExpandOnHover, setIsExpandOnHover] = useState(false);
+
+  const userRoles = getUserScope() ?? ROLE.STUDENT; // Lấy vai trò người dùng từ token
 
   const handleHoverExpand = (value: boolean) => {
     if (!isExpand) {
@@ -223,7 +227,35 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
     return icons_map[icon];
   };
 
+  // Lọc các mục trong sidebar dựa trên vai trò của người dùng
+  const filterSidebarByRole = (structure, userRoles) => {
+    return structure
+      .map(item => {
+        // Kiểm tra vai trò cho mục con (nếu có)
+        const children = item.child ? filterSidebarByRole(item.child, userRoles) : null;
+
+        // Kiểm tra nếu ít nhất một vai trò của người dùng phù hợp với vai trò yêu cầu của mục
+        if (item.role.some(role => userRoles.includes(role))) {
+          return {
+            ...item,
+            child: children // Chỉ thêm các mục con đã lọc
+          };
+        }
+
+        return null;
+      })
+      .filter(item => item !== null); // Loại bỏ các mục không có quyền
+  };
+
+  // const filteredSidebar = filterSidebarByRole(sidebarStructure, userRole);
+
   const generateMenu = (item: any, index: number, recursive: number = 0) => {
+    // Kiểm tra quyền truy cập vào mục dựa trên `role`
+    const hasPermission = item.role.some(role => userRoles.includes(role));
+
+    // // Bỏ qua render nếu người dùng không có quyền truy cập vào mục
+    if (!hasPermission) return null;
+
     if (activeName === "" && activeLink.includes(item.link)) {
       setActiveName(item.name);
     }

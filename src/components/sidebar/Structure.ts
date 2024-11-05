@@ -1,3 +1,5 @@
+import { ROLE } from '../../enum/Role.tsx'
+
 const sidebarStructure = [
     {
         id: "dashboard",
@@ -5,7 +7,8 @@ const sidebarStructure = [
         name: "Dashboard",
         parent: true,
         icon: "dasbor",
-        link: "/"
+        link: "/",
+        role: [ROLE.ADMIN, ROLE.INSTRUCTOR, ROLE.STUDENT]
     },
     {
         id: "user_list",
@@ -13,13 +16,15 @@ const sidebarStructure = [
         name: "users",
         parent: true,
         icon: "users",
+        role: [ROLE.ADMIN],
         child: [
             {
                 id: "student",
                 title: "Sinh viên",
                 name: "users.student",
                 link: "/sinh-vien",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.ADMIN]
             },
             {
                 id: "instructor",
@@ -27,6 +32,7 @@ const sidebarStructure = [
                 name: "users.instructor",
                 link: "/giang-vien",
                 icon: "dot",
+                role: [ROLE.ADMIN]
             }
         ]
     },
@@ -36,20 +42,23 @@ const sidebarStructure = [
         name: "clazzManagement",
         parent: true,
         icon: "clazz",
+        role: [ROLE.ADMIN],
         child: [
             {
                 id: "clazz",
                 title: "Lớp học",
                 name: "clazzManagement.clazz",
                 link: "/lop-hoc",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.ADMIN]
             },
             {
                 id: "clazz-open",
                 title: "Mở lớp",
                 name: "clazzManagement.clazz-open",
                 link: "/mo-lop",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.ADMIN]
             }
         ]
     },
@@ -59,27 +68,31 @@ const sidebarStructure = [
         name: "study",
         parent: true,
         icon: "study",
+        role: [ROLE.STUDENT],
         child: [
             {
                 id: "course-registration",
                 title: "Đăng ký lớp học",
                 name: "study.course-registration",
                 link: "/dang-ky-mon-hoc",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.STUDENT]
             },
             {
                 id: "schedule-child",
                 title: "Lịch học",
                 name: "study.schedule-child",
                 link: "/lich-hoc",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.STUDENT]
             },
             {
                 id: "exam-schedule",
                 title: "Lịch thi",
                 name: "study.exam-schedule",
                 link: "/lich-thi",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.STUDENT]
             }
         ]
     },
@@ -89,7 +102,8 @@ const sidebarStructure = [
         name: "mou",
         parent: true,
         icon: "mou",
-        link: "/dashboard/mou"
+        link: "/dashboard/mou",
+        role: [ROLE.STUDENT]
     },
     {
         id: "pusat-unduh-data",
@@ -97,27 +111,31 @@ const sidebarStructure = [
         name: "pusatunduhdata",
         parent: true,
         icon: "pusatunduhdata",
+        role: [ROLE.STUDENT],
         child: [
             {
                 id: "unduh-data-transaksi",
                 title: "Unduh Data Transaksi",
                 name: "pusatunduhdata.unduhdatatransaksi",
                 link: "/dashboard/download/transaction",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.STUDENT]
             },
             {
                 id: "unduh-data-perusahaan",
                 title: "Unduh Data Perusahaan",
                 name: "pusatunduhdata.unduhdataperusahaan",
                 link: "/dashboard/download/company",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.STUDENT]
             },
             {
                 id: "unduh-data-mou",
                 title: "Unduh Data MOU",
                 name: "pusatunduhdata.unduhdatamou",
                 link: "/dashboard/download/mou",
-                icon: "dot"
+                icon: "dot",
+                role: [ROLE.STUDENT]
             }
         ]
     }

@@ -1,9 +1,5 @@
 import axios from "./Customize-axios";
 
-const registerClazz = (clazzId, studentId) => {
-    return axios.post(`/api/classes/${clazzId}/${studentId}`);
-}
-
 const getAllClazzBySubject = (subjectId) => {
     return axios.get(`/api/classes/subject/${subjectId}`)
 }
@@ -28,12 +24,16 @@ const importExcelClazzAPI = (clazzes) => {
     return axios.post(`/api/classes/import`, clazzes)
 }
 
+const getInforDetailBySubjectAPI = (subjectId) => {
+    return axios.get(`/api/classes/infor-detail/${subjectId}`)
+}
+
 export {
-    registerClazz,
     getAllClazzBySubject,
     getAllClazzAPI,
     createClazzAPI,
     updateClazzAPI,
     deleteClazzAPI,
-    importExcelClazzAPI
+    importExcelClazzAPI,
+    getInforDetailBySubjectAPI
 }

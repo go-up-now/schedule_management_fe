@@ -4,17 +4,22 @@ import NotFound from "../pages/NotFound.jsx"
 import StudentManagePage from "../pages/accountManagement/students/StudentManagePage.tsx"
 import ClazzManagementPage from "../pages/clazzManagement/ClazzManagementPage.tsx"
 import CourseRegistrationPage from "../pages/schedule/index.tsx"
+import ProtectedRoute from "./ProtectedRoute.jsx"
+import { getUserScope } from '../utilss/authUtils.ts'
+import { ROLE } from '../enum/Role.tsx'
 
 const AppRouters = () => {
+    const userRoles = getUserScope() ?? ROLE.STUDENT;
     return (
         <>
             <Routes>
                 {/* {isAuthenticated() && getUserScope() ? ( */}
                 <>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/sinh-vien" element={<StudentManagePage />} />
-                    <Route path="/lop-hoc" element={<ClazzManagementPage />} />
-                    <Route path="/dang-ky-mon-hoc" element={<CourseRegistrationPage />} />
+                    {/* <Route path="/" element={<Dashboard />} /> */}
+                    <Route path="/" element={<ProtectedRoute element={<Dashboard />} roles={[ROLE.ADMIN, ROLE.INSTRUCTOR, ROLE.STUDENT]} userRoles={userRoles} />} />
+                    <Route path="/sinh-vien" element={<ProtectedRoute element={<StudentManagePage />} roles={[ROLE.ADMIN]} userRoles={userRoles} />} />
+                    <Route path="/lop-hoc" element={<ProtectedRoute element={<ClazzManagementPage />} roles={[ROLE.ADMIN]} userRoles={userRoles} />} />
+                    <Route path="/dang-ky-mon-hoc" element={<ProtectedRoute element={<CourseRegistrationPage />} roles={[ROLE.STUDENT]} userRoles={userRoles} />} />
                     <Route path="*" element={<NotFound />} />
                 </>
                 {/* ) : (
