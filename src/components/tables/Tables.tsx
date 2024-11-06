@@ -80,7 +80,7 @@ const Tables = <T extends object>({
     const currentData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
     return (
-        <div className="relative overflow-x-auto sm:rounded-lg bg-white">
+        <div className="relative overflow-x-auto sm:rounded-lg bg-white ">
             {loading ? (
                 <div className="flex justify-center items-center h-64">
                     <Spinner /> {/* Render Spinner while loading */}
@@ -121,7 +121,7 @@ const Tables = <T extends object>({
                         <table className="min-w-full text-sm text-left rtl:text-right text-gray-500 hidden md:table">
                             <thead className="text-xs text-[#808EA1] bg-[#F8F8F8]">
                                 <tr>
-                                    <th scope="col" className="px-6 py-4">STT</th>
+                                    <th scope="col" className="px-3 py-4">STT</th>
                                     {headers.map((header, index) => (
                                         <th key={index} scope="col" className="px-6 py-4">{header}</th>
                                     ))}
@@ -130,7 +130,7 @@ const Tables = <T extends object>({
                             <tbody>
                                 {currentData.map((item, index) => (
                                     <tr key={index} className="bg-white border-t hover:text-black hover:bg-gray-100 text-[#808EA1] text-xs">
-                                        <th className="px-6 py-4">{index + 1 + currentPage * rowsPerPage}</th>
+                                        <th className="px-3 py-4">{index + 1 + currentPage * rowsPerPage}</th>
                                         {renderRow(item)}
                                     </tr>
                                 ))}

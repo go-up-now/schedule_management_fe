@@ -28,6 +28,10 @@ const getInforDetailBySubjectAPI = (subjectId) => {
     return axios.get(`/api/classes/infor-detail/${subjectId}`)
 }
 
+const getClazzInStudyinByStudentAPI = () => {
+    return axios.get(`/api/classes/studyin-student`);
+}
+
 export {
     getAllClazzBySubject,
     getAllClazzAPI,
@@ -35,5 +39,6 @@ export {
     updateClazzAPI,
     deleteClazzAPI,
     importExcelClazzAPI,
-    getInforDetailBySubjectAPI
+    getInforDetailBySubjectAPI,
+    getClazzInStudyinByStudentAPI
 }

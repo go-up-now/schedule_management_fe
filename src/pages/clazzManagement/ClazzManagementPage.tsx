@@ -21,7 +21,6 @@ import { ClazzSchema } from './ClazzModal.tsx'
 import ModalConfirm from '../../components/ModalConfirm.tsx'
 import useConfirm from "../../hooks/useConfirm";
 import { toast } from 'react-toastify';
-import { getAllEducationProgramAPI } from '../../services/educationProgramService.js'
 import UploadExcelModal from '../../components/excel/UpLoadExcel.tsx'
 import Spinner from '../../components/Spinner.tsx'
 import { getAllSubjectAPI } from '../../services/SubjectSerivce.js'
@@ -52,14 +51,14 @@ interface Clazz {
     endTime: string;
     status: boolean;
     instructorCode: string;
-    shift: string | number;
+    shift: Shift;
     activityStatus: string;
     subject: Subject;
     room: Room;
 }
 
-interface EducationProgram {
-    code: string;
+interface Shift {
+    id: number;
     name: string;
 }
 
@@ -121,7 +120,7 @@ const ClazzManagementPage = () => {
         <td key={`item-subject-name-${item.id}`} className="px-6 py-4">{item.subject.code + '-' + item.subject.name}</td>,
         <td key={`item-instructor-${item.id}`} className="px-6 py-4">{item.instructorCode}</td>,
         <td key={`item-room-${item.id}`} className="px-6 py-4">{item.room.room}</td>,
-        <td key={`item-shift-${item.id}`} className="px-6 py-4">{item.shift}</td>,
+        <td key={`item-shift-${item.id}`} className="px-6 py-4">{item.shift.id}</td>,
         <td key={`item-dayOfWeek-${item.id}`} className="px-6 py-4">{item.dayOfWeek}</td>,
         <td key={`item-onlineLink-${item.id}`} className="px-6 py-4">{item.onlineLink}</td>,
         <td key={`item-activityStatus-${item.id}`}
@@ -364,7 +363,7 @@ const ClazzManagementPage = () => {
             endTime: isClazz ? isClazz.endTime : '',
             status: isClazz ? isClazz.status : true,
             instructorCode: isClazz ? isClazz.instructorCode : '',
-            shift: isClazz ? isClazz.shift : '',
+            shift: isClazz ? isClazz.shift.id : '',
             activityStatus: isClazz ? isClazz.activityStatus : 'Chưa hoạt động',
             subject: isClazz ? isClazz.subject.code : '',
             room: isClazz ? isClazz.room.room : '',
@@ -493,7 +492,7 @@ const ClazzManagementPage = () => {
         startTime: item.startTime,
         endTime: item.endTime,
         instructorCode: item.instructorCode,
-        shift: item.shift,
+        shift: item.shift.id,
         subject: item.subject.code,
         room: item.room.room,
         activityStatus: item.activityStatus,

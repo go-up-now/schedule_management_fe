@@ -7,6 +7,7 @@ import CourseRegistrationPage from "../pages/schedule/index.tsx"
 import ProtectedRoute from "./ProtectedRoute.jsx"
 import { getUserScope } from '../utilss/authUtils.ts'
 import { ROLE } from '../enum/Role.tsx'
+import ScheduleStudyPage from "../pages/schedule/ScheduleStudy/ScheduleStudyPage.tsx"
 
 const AppRouters = () => {
     const userRoles = getUserScope() ?? ROLE.STUDENT;
@@ -20,6 +21,7 @@ const AppRouters = () => {
                     <Route path="/sinh-vien" element={<ProtectedRoute element={<StudentManagePage />} roles={[ROLE.ADMIN]} userRoles={userRoles} />} />
                     <Route path="/lop-hoc" element={<ProtectedRoute element={<ClazzManagementPage />} roles={[ROLE.ADMIN]} userRoles={userRoles} />} />
                     <Route path="/dang-ky-mon-hoc" element={<ProtectedRoute element={<CourseRegistrationPage />} roles={[ROLE.STUDENT]} userRoles={userRoles} />} />
+                    <Route path="/lich-hoc" element={<ProtectedRoute element={<ScheduleStudyPage />} roles={[ROLE.STUDENT]} userRoles={userRoles} />} />
                     <Route path="*" element={<NotFound />} />
                 </>
                 {/* ) : (
