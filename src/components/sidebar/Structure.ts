@@ -3,13 +3,15 @@ import { ROLE } from '../../enum/Role.tsx'
 const sidebarStructure = [
     {
         id: "dashboard",
-        title: "Dashboard",
+        title: "Trang chủ",
         name: "Dashboard",
         parent: true,
         icon: "dasbor",
         link: "/",
         role: [ROLE.ADMIN, ROLE.INSTRUCTOR, ROLE.STUDENT]
     },
+
+    // ADMIN
     {
         id: "user_list",
         title: "Quản lý người dùng",
@@ -62,6 +64,8 @@ const sidebarStructure = [
             }
         ]
     },
+
+    // STUDENT
     {
         id: "study",
         title: "Học tập",
@@ -93,16 +97,50 @@ const sidebarStructure = [
                 link: "/lich-thi",
                 icon: "dot",
                 role: [ROLE.STUDENT]
+            },
+            {
+                id: "exam-schedule",
+                title: "Thông tin điểm danh",
+                name: "study.roll-call",
+                link: "/thong-tin-diem-danh",
+                icon: "dot",
+                role: [ROLE.STUDENT]
             }
         ]
     },
     {
-        id: "mou",
-        title: "MOU",
-        name: "mou",
+        id: "learning-outcomes",
+        title: "Kết quả học tập",
+        name: "learning-outcomes",
         parent: true,
-        icon: "mou",
-        link: "/dashboard/mou",
+        icon: "learning-outcomes",
+        role: [ROLE.STUDENT],
+        child: [
+            {
+                id: "learning-history",
+                title: "Lịch sử học tập",
+                name: "learning-outcomes.learning-history",
+                link: "/lich-su-hoc-tap",
+                icon: "dot",
+                role: [ROLE.STUDENT]
+            },
+            {
+                id: "transcript",
+                title: "Bảng điểm",
+                name: "learning-outcomes.transcript",
+                link: "/bang-diem",
+                icon: "dot",
+                role: [ROLE.STUDENT]
+            }
+        ]
+    },
+    {
+        id: "help",
+        title: "Hỗ trợ",
+        name: "help",
+        parent: true,
+        icon: "help",
+        link: "/ho-tro",
         role: [ROLE.STUDENT]
     },
     {
