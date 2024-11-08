@@ -50,7 +50,7 @@ function App() {
   }
 
   return (
-    <div className="relative min-h-screen zoom-90">
+    <div className="relative min-h-screen">
       {
         isLoginPage ? (<LoginRouter />)
           :

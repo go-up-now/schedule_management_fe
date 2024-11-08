@@ -27,7 +27,7 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
   const [isExpand, setIsExpand] = useState(true);
   const [isExpandOnHover, setIsExpandOnHover] = useState(false);
 
-  const userRoles = getUserScope() ?? ROLE.STUDENT; // Lấy vai trò người dùng từ token
+  const userRoles: ROLE[] = getUserScope() ?? [ROLE.STUDENT]; // Lấy vai trò người dùng từ token
 
   const handleHoverExpand = (value: boolean) => {
     if (!isExpand) {
