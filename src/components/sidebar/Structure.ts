@@ -141,7 +141,7 @@ const sidebarStructure = [
         parent: true,
         icon: "help",
         link: "/ho-tro",
-        role: [ROLE.STUDENT]
+        role: [ROLE.STUDENT, ROLE.ADMIN, ROLE.INSTRUCTOR]
     },
     {
         id: "pusat-unduh-data",

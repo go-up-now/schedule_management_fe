@@ -32,8 +32,9 @@ export default function LoginPage(): JSX.Element {
                 toast.error(data.data.message)
             } if (data && data.code === 200) {
                 localStorage.setItem("token", data.data.token)
+                window.location.reload();
                 navigate('/')
-                toast.success("Chào mừng bạn đến với Schedule Management App")
+                // toast.success("Chào mừng bạn đến với Schedule Management App")
             }
         } catch (error) {
             if (error.response && error.response.data) {

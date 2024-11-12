@@ -341,11 +341,67 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
   };
 
   return (
-    <nav
+    // <nav
+    //   role="navigation"
+    //   className={[
+    //     "bg-white border-r border-slate-100 shadow-md absolute inset-y-0 left-0",
+    //     "duration-300 ease-in-out md:fixed md:translate-x-0 z-40 mt-16",
+    //     `${isExpand
+    //       ? "bg-white w-72"
+    //       : isExpandOnHover
+    //         ? "bg-white w-72 backdrop-blur-md"
+    //         : "bg-white w-20"
+    //     }`
+    //   ].join(" ")}
+    // >
+    //   <button
+    //     className="absolute z-50 bottom-8 -right-3 bg-white hover:bg-slate-100 text-slate-500 p-1.5 rounded-full border border-slate-200"
+    //     onClick={() => {
+    //       setIsExpand(!isExpand);
+    //       setExpand(!isExpand);
+    //     }}
+    //   >
+    //     <svg
+    //       xmlns="http://www.w3.org/2000/svg"
+    //       className={`${isExpand ? "rotate-0" : "rotate-180"
+    //         } transform duration-500 h-4 w-4`}
+    //       viewBox="0 0 20 20"
+    //       fill="currentColor"
+    //     >
+    //       <path
+    //         fillRule="evenodd"
+    //         d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+    //         clipRule="evenodd"
+    //       />
+    //     </svg>
+    //   </button>
+    //   <div
+    //     onMouseEnter={() => handleHoverExpand(true)}
+    //     onMouseLeave={() => handleHoverExpand(false)}
+    //     className={`relative h-screen overflow-hidden`}
+    //   >
+    //     <SimpleBar style={{ height: "100%" }} autoHide >
+    //       <div className="text-slate-500">
+    //         <div className="mt-3 mb-10 p-0">
+    //           <ul className="list-none text-sm font-normal px-3">
+    //             {sidebarStructure.map((item, index) =>
+    //               generateMenu(item, index)
+    //             )}
+    //           </ul>
+    //         </div>
+    //       </div>
+    //     </SimpleBar>
+    //   </div>
+    // </nav>
+
+    <aside id="logo-sidebar"
       role="navigation"
       className={[
-        "bg-white border-r border-slate-100 shadow-md absolute inset-y-0 left-0",
-        "duration-300 ease-in-out md:fixed md:translate-x-0 z-40 mt-16",
+        // "fixed top-0 left-0 z-40 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700",
+        "fixed top-0 left-0 z-40 h-screen pt-20 bg-white border-r border-gray-200 md:translate-x-0",
+        "duration-300 ease-in-out -translate-x-full",
+        // "bg-white border-r border-slate-100 shadow-md absolute inset-y-0 left-0",
+        // "duration-300 ease-in-out fixed z-40 mt-16 sm:translate-x-0",
         `${isExpand
           ? "bg-white w-72"
           : isExpandOnHover
@@ -353,76 +409,49 @@ const Sidebar: FC<SidebarProps> = ({ setExpand }) => {
             : "bg-white w-20"
         }`
       ].join(" ")}
-    >
-      <button
-        className="absolute z-50 bottom-8 -right-3 bg-white hover:bg-slate-100 text-slate-500 p-1.5 rounded-full border border-slate-200"
-        onClick={() => {
-          setIsExpand(!isExpand);
-          setExpand(!isExpand);
-        }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`${isExpand ? "rotate-0" : "rotate-180"
-            } transform duration-500 h-4 w-4`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
+      aria-label="Sidebar">
+      <div className="h-full pb-4 overflow-y-visible bg-white dark:bg-gray-800">
+        <button
+          className="absolute z-50 bottom-8 -right-3 bg-white hover:bg-slate-100 text-slate-500 p-1.5 rounded-full border border-slate-200 hidden md:block"
+          onClick={() => {
+            setIsExpand(!isExpand);
+            setExpand(!isExpand);
+          }}
         >
-          <path
-            fillRule="evenodd"
-            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-      <div
-        onMouseEnter={() => handleHoverExpand(true)}
-        onMouseLeave={() => handleHoverExpand(false)}
-        className={`relative h-screen overflow-hidden`}
-      >
-        <SimpleBar style={{ height: "100%" }} autoHide >
-          <div className="text-slate-500">
-            {/* <div className="my-3 flex flex-col items-center h-33 overflow-x-hidden">
-              <a
-                href={link}
-                className={`text-center flex flex-col items-center justify-center`}
-              >
-                <div
-                  className={`rounded-full border-4 border-white overflow-hidden duration-300 ${isExpand
-                    ? "h-28 w-28"
-                    : isExpandOnHover
-                      ? "h-28 w-28"
-                      : "h-12 w-12"
-                    }`}
-                >
-                  <img src={profilePic} className="block" alt="" />
-                </div>
-                <div
-                  className={`text-base font-semibold text-slate-700 mt-3 truncate duration-300 ${isExpand ? "" : isExpandOnHover ? "" : "w-0 h-0 opacity-0"
-                    }`}
-                >
-                  {username}
-                </div>
-                <div
-                  className={`duration-300 text-sm text-slate-500 truncate ${isExpand ? "" : isExpandOnHover ? "" : "w-0 h-0 opacity-0"
-                    }`}
-                >
-                  {company}
-                </div>
-              </a>
-            </div> */}
-
-            <div className="mt-3 mb-10 p-0">
-              <ul className="list-none text-sm font-normal px-3">
-                {sidebarStructure.map((item, index) =>
-                  generateMenu(item, index)
-                )}
-              </ul>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className={`${isExpand ? "rotate-0" : "rotate-180"
+              } transform duration-500 h-4 w-4`}
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+        <div
+          onMouseEnter={() => handleHoverExpand(true)}
+          onMouseLeave={() => handleHoverExpand(false)}
+          className={`relative h-screen overflow-hidden`}
+        >
+          <SimpleBar style={{ height: "100%" }} autoHide >
+            <div className="text-slate-500">
+              <div className="mt-3 mb-10 p-0">
+                <ul className="list-none text-sm font-normal px-3">
+                  {sidebarStructure.map((item, index) =>
+                    generateMenu(item, index)
+                  )}
+                </ul>
+              </div>
             </div>
-          </div>
-        </SimpleBar>
+          </SimpleBar>
+        </div>
       </div>
-    </nav>
+    </aside>
+
   );
 };
 

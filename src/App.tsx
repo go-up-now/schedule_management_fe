@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./components/sidebar/Sidebar.tsx";
-import Navbar from './components/sidebar/Navbar.jsx';
+import Header from './components/sidebar/Header.jsx';
 import { useLocation } from "react-router-dom";
 import AppRouters from "./router/AppRouter.jsx";
 import LoginRouter from "./router/LoginRouter.jsx";
@@ -50,7 +50,7 @@ function App() {
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen ">
       {
         isLoginPage ? (<LoginRouter />)
           :
@@ -59,10 +59,10 @@ function App() {
             < Sidebar setExpand={setSideMenuIsExpand} />
             {/* content */}
             <div
-              className={`flex-1 min-h-screen mx-0 bg-slate-100 `}
+              className={`flex-1 min-h-screen mx-0 bg-slate-100`}
             >
-              <Navbar />
-              <div className={`ms-2 transition-all
+              <Header />
+              <div className={`ms-2 transition-all 
                duration-300 ease-in-out ${sideMenuIsExpand ? "md:ml-72" : "md:ml-20"}`}>
                 <AppRouters />
               </div>

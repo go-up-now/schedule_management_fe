@@ -43,3 +43,10 @@ code {
     /* 6px */
   ;
 }
+
+.scale-logo {
+  transform: scale(1.5);
+  /* Tăng kích thước lên 1.5 lần */
+  transform-origin: left;
+  /* Giữ nguyên vị trí bên trái */
+}

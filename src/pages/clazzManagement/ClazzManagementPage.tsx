@@ -645,7 +645,7 @@ const ClazzManagementPage = () => {
                             { value: '', label: 'Tất cả' },
                             { value: 'Chưa hoạt động', label: 'Chưa hoạt động' },
                             { value: 'Đang hoạt động', label: 'Đang hoạt động' },
-                            { value: 'Chưa hoạt động', label: 'Chưa hoạt động' }
+                            { value: 'Ngừng hoạt động', label: 'Ngừng hoạt động' }
                         ]}
                         loading={isLoading}
                         advancedRowFilter
