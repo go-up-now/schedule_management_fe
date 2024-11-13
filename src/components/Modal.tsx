@@ -6,7 +6,7 @@ interface ModalProps {
   iconPopup?: React.ReactNode;
   content: React.ReactNode;
   positionButton?: 'center' | 'end';
-  buttonConfirm?: React.ReactElement;
+  buttonConfirm?: React.ReactElement | undefined;
   buttonCancel?: React.ReactElement;
   isOpen?: boolean;
   onClose?: () => void;

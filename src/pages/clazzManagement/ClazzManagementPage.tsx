@@ -213,7 +213,7 @@ const ClazzManagementPage = () => {
         setIsLoading(true)
         try {
             let response = await getAllClazzAPI();
-            console.log(response)
+
             if (response && response.data) {
                 setListClazzAPI(response.data)
                 const activeClazz = response.data.filter(item => item.activityStatus === 'Đang hoạt động');

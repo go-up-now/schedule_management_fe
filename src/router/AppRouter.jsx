@@ -13,6 +13,7 @@ import HelpPageIndex from "../pages/help/HelpPageIndex.tsx"
 import LogoutPage from "../pages/LogoutPage.tsx"
 import UnAuthorizedPage from "../pages/UnAuthorizedPage.tsx"
 import ErrorPage from "../pages/ErrorPage.tsx"
+import DetailInforIndex from "../pages/detailInfor/DetailInforIndex.tsx"
 
 const AppRouters = () => {
     const userRoles = getUserScope() ?? ROLE.STUDENT;
@@ -25,6 +26,7 @@ const AppRouters = () => {
                     <Route path="/" element={<ProtectedRoute element={<Dashboard />} roles={[ROLE.ADMIN, ROLE.INSTRUCTOR, ROLE.STUDENT]} userRoles={userRoles} />} />
                     <Route path="/ho-tro" element={<ProtectedRoute element={<HelpPageIndex />} roles={[ROLE.ADMIN, ROLE.INSTRUCTOR, ROLE.STUDENT]} userRoles={userRoles} />} />
                     <Route path="/dang-xuat" element={<ProtectedRoute element={<LogoutPage />} roles={[ROLE.ADMIN, ROLE.INSTRUCTOR, ROLE.STUDENT]} userRoles={userRoles} />} />
+                    <Route path="/thong-tin-ca-nhan" element={<ProtectedRoute element={<DetailInforIndex />} roles={[ROLE.ADMIN, ROLE.INSTRUCTOR, ROLE.STUDENT]} userRoles={userRoles} />} />
 
                     {/* ADMIN */}
                     <Route path="/sinh-vien" element={<ProtectedRoute element={<StudentManagePage />} roles={[ROLE.ADMIN]} userRoles={userRoles} />} />

@@ -1,4 +1,3 @@
-import Container from "../../components/Container.tsx"
 import React from "react";
 import Accordion from "../../components/Accordion.tsx";
 import TabPanel from "../../components/TabPanel.tsx";
@@ -210,7 +209,7 @@ const HelpPageStudent = () => {
     ]
 
     return (
-        <Container>
+        <>
             <TitleHeader title="HỖ TRỢ" />
             <div className="w-full bg-white p-4 shadow-md rounded-2xl">
 
@@ -221,7 +220,7 @@ const HelpPageStudent = () => {
                 >
                 </TabPanel>
             </div>
-        </Container>
+        </>
     )
 }
 

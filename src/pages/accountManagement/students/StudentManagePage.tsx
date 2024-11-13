@@ -292,7 +292,6 @@ const StudentManagePage = () => {
         else if (id === 'Sửa') {
             setIsStudent(item);
             setIsModalOpenUpdate(true);
-            console.log("123 ", item)
             setPublicId(getPublicIdFromUrl(item.user.avatar))
         }
         else if (id === 'Xóa') {
