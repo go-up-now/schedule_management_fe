@@ -14,6 +14,7 @@ import LogoutPage from "../pages/LogoutPage.tsx"
 import UnAuthorizedPage from "../pages/UnAuthorizedPage.tsx"
 import ErrorPage from "../pages/ErrorPage.tsx"
 import DetailInforIndex from "../pages/detailInfor/DetailInforIndex.tsx"
+import TranscriptPage from "../pages/learningOutComes/TranscriptPage.tsx"
 
 const AppRouters = () => {
     const userRoles = getUserScope() ?? ROLE.STUDENT;
@@ -36,6 +37,7 @@ const AppRouters = () => {
                     <Route path="/dang-ky-mon-hoc" element={<ProtectedRoute element={<CourseRegistrationPage />} roles={[ROLE.STUDENT]} userRoles={userRoles} />} />
                     <Route path="/lich-hoc" element={<ProtectedRoute element={<ScheduleStudyPage />} roles={[ROLE.STUDENT]} userRoles={userRoles} />} />
                     <Route path="/lich-su-hoc-tap" element={<ProtectedRoute element={<LearningHistoryPage />} roles={[ROLE.STUDENT]} userRoles={userRoles} />} />
+                    <Route path="/bang-diem" element={<ProtectedRoute element={<TranscriptPage />} roles={[ROLE.STUDENT]} userRoles={userRoles} />} />
 
                     <Route path="/unauthorized" element={<UnAuthorizedPage />} />
                     <Route path="*" element={<ErrorPage />} />

@@ -16,6 +16,8 @@ interface TableProps<T> {
     advancedRowFilter?: boolean; // Enable advanced row filtering
     loading?: boolean; // Add a loading state
     nonDataMessage?: string;
+    isPage?: boolean;
+    isNumber?: boolean;
 }
 
 const Tables = <T extends object>({
@@ -30,6 +32,8 @@ const Tables = <T extends object>({
     advancedRowFilter = false,
     nonDataMessage = 'Không có dữ liệu',
     loading = false,
+    isPage = true,
+    isNumber = true,
 }: TableProps<T>) => {
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(maxRow ?? 10);
@@ -121,7 +125,7 @@ const Tables = <T extends object>({
                         <table className="min-w-full text-sm text-left rtl:text-right text-gray-500 hidden md:table">
                             <thead className="text-xs text-[#808EA1] bg-[#F8F8F8]">
                                 <tr>
-                                    <th scope="col" className="px-3 py-4">STT</th>
+                                    {isNumber && <th scope="col" className="px-3 py-4">STT</th>}
                                     {headers.map((header, index) => (
                                         <th key={index} scope="col" className="px-6 py-4">{header}</th>
                                     ))}
@@ -130,7 +134,7 @@ const Tables = <T extends object>({
                             <tbody>
                                 {currentData.map((item, index) => (
                                     <tr key={index} className="bg-white border-t hover:text-black hover:bg-gray-100 text-[#808EA1] text-xs">
-                                        <th className="px-3 py-4">{index + 1 + currentPage * rowsPerPage}</th>
+                                        {isNumber && <th className="px-3 py-4">{index + 1 + currentPage * rowsPerPage}</th>}
                                         {renderRow(item)}
                                     </tr>
                                 ))}
@@ -160,17 +164,20 @@ const Tables = <T extends object>({
                     </div>
                     {currentData.length === 0 && <div className="border flex justify-center items-center w-full py-20 text-2xl">{nonDataMessage}</div>}
                     <section className={`flex items-center my-3 px-4`}>
-                        <div className="flex-grow flex justify-center items-center">
-                            <div className="flex items-center">
-                                <button onClick={handlePreviousPage} disabled={currentPage === 0}>
-                                    <FaAngleLeft className={`w-4 h-4 mt-[0.1rem] ${currentPage === 0 ? "fill-[#808EA1]" : "fill-[#000000]"}`} />
-                                </button>
-                                <p className="font-bold mx-3 text-md">{currentPage + 1}/{totalPages}</p>
-                                <button onClick={handleNextPage} disabled={currentPage === totalPages - 1}>
-                                    <FaAngleRight className={`w-4 h-4 mt-[0.1rem] ${currentPage === totalPages - 1 ? "fill-[#808EA1]" : "fill-[#000000]"}`} />
-                                </button>
+                        {isPage &&
+                            <div className="flex-grow flex justify-center items-center">
+                                <div className="flex items-center">
+                                    <button onClick={handlePreviousPage} disabled={currentPage === 0}>
+                                        <FaAngleLeft className={`w-4 h-4 mt-[0.1rem] ${currentPage === 0 ? "fill-[#808EA1]" : "fill-[#000000]"}`} />
+                                    </button>
+                                    <p className="font-bold mx-3 text-md">{currentPage + 1}/{totalPages}</p>
+                                    <button onClick={handleNextPage} disabled={currentPage === totalPages - 1}>
+                                        <FaAngleRight className={`w-4 h-4 mt-[0.1rem] ${currentPage === totalPages - 1 ? "fill-[#808EA1]" : "fill-[#000000]"}`} />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        }
+
                         {advancedRowFilter &&
                             <div className="flex items-center gap-3">
                                 <span>Xem</span>

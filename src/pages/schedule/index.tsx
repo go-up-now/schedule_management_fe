@@ -364,12 +364,13 @@ const CourseRegistrationPage = () => {
                                 <p className="text-[#9A9A9A] text-base self-center mr-3">Tổng số tín chỉ đăng ký: <strong>{credits}</strong></p>
                                 <p className="text-[#9A9A9A] text-base self-center mr-3">Tổng số tiền phải nộp: <strong>{VND.format(costs)}</strong></p>
                                 <p className="text-[#9A9A9A] text-base self-center mr-3 text-red-500"><strong>Số tín chỉ đăng ký phải nhiều hơn 10 tín chỉ</strong></p>
+                                <p className="text-[#9A9A9A] text-base self-center mr-3 text-red-500"><strong>Vui lòng thanh toán trước 24h khi đăng ký</strong></p>
                             </>
                         }
                     </div>
                 </div>
 
-                <div className="pt-5 overflow-x-auto">
+                <div className=" overflow-x-auto">
                     <TabPanel
                         tabs={CourseRegistrationTabs}
                         activeClassName="text-black border-blue-500 border-b-2"
