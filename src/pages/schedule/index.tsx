@@ -15,10 +15,13 @@ import { useDispatch } from 'react-redux';
 import { setClazz, removeClazz } from "../../reducers/clazzSlice.tsx";
 import { useSelector } from 'react-redux';
 import { getInforDetailBySubjectAPI } from '../../services/ClazzService.js'
-import { cancelRegistrationClazz } from '../../services/StudyInService.js'
+import { cancelRegistrationClazz, updateStatusAPI } from '../../services/StudyInService.js'
 import { toast } from "react-toastify";
 import { setModal } from '../../reducers/modalSlice.tsx'
 import { VND } from '../../utilss/convertNumberFormat.js'
+import { paymentAPI } from '../../services/PaymentService.js'
+import { useSearchParams } from 'react-router-dom';
+import Spinner from "../../components/Spinner.tsx";
 
 interface Subject {
     id: number;
@@ -48,12 +51,19 @@ const CourseRegistrationPage = () => {
     const [subjectId, setSubjectId] = useState(null);
     const [costs, setCosts] = useState(0);
     const [credits, setCredits] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState(false);
+    const [searchParams] = useSearchParams();
 
     const dispatch = useDispatch();
     const isOpen = useSelector((state) => state.modal.isOpen);
     const userInfo = useSelector((state) => state.user.userInfo);
 
+    // Trạng thái thanh toán
+    let status = searchParams.get('status')
+
     const subjects: Subject[] = listSubject;
+    const subjects1: Subject[] = listSubject2;
 
     const openModal = async (name, item) => {
         if (name === 'detail1') {
@@ -68,7 +78,7 @@ const CourseRegistrationPage = () => {
         else if (name === 'detail2') {
             setIsModalOpenDetail(true);
             let response = await getInforDetailBySubjectAPI(item.id);
-            console.log("response, ", response)
+
             if (response && response.data) {
                 setClazzz(response.data);
                 setSubject(item);
@@ -76,13 +86,13 @@ const CourseRegistrationPage = () => {
         }
         else if (name === 'cancel') {
             setIsModalConfirmOpen(true);
-            console.log(item)
             setSubjectId(item.id);
         }
     }
 
     // Hủy đăng ký lớp học
     const handleCancelSubject = async () => {
+        console.log("subjectid", subjectId)
         try {
             let res = await cancelRegistrationClazz(subjectId);
             dispatch(
@@ -103,7 +113,44 @@ const CourseRegistrationPage = () => {
         setIsModalConfirmOpen(false);
     }
 
-    const subjects1: Subject[] = listSubject2;
+    const handlePayment = async () => {
+        setLoading(true)
+        if (credits >= 10) {
+            // const payments = [
+            //     {
+            //         name: "Mỳ tôm Hảo Hảo ly",
+            //         quantity: 2,
+            //         price: 1000
+            //     }
+            // ];
+            let payments = [];
+            subjects1.forEach(element => {
+                let payment = {
+                    name: element.name,
+                    quantity: 1,
+                    price: element.cost
+                }
+                payments.push(payment)
+            });
+
+            try {
+                let response = await paymentAPI(payments);
+                console.log(response)
+                if (response && response.code == 200) {
+
+                    // Redirect đến URL thanh toán 
+                    window.location.href = response.data;
+                }
+
+            } catch (error) {
+                toast.error("Lỗi thanh toán !")
+            }
+        }
+        else {
+            toast.warn("Số tín chỉ đăng ký phải nhiều hơn 10 tín chỉ !")
+        }
+        setLoading(false);
+    }
 
     const renderRow = (item: Subject) => [
         // <th key={`item-id-${item.id}`} className="px-6 py-4">{item.id}</th>,
@@ -221,8 +268,18 @@ const CourseRegistrationPage = () => {
                                     size="xs"
                                     variant="btn-none"
                                     className="bg-blue-500 p-2 w-full md:w-40 self-center"
+                                    onClick={handlePayment}
+                                    disabled={loading}
                                 >
-                                    <FontAwesomeIcon icon={faMoneyCheck} /> Thanh toán
+                                    {loading ? (
+                                        <>
+                                            <Spinner className="text-white" />
+                                        </>
+                                    ) : <>
+                                        <FontAwesomeIcon icon={faMoneyCheck} /> Thanh toán
+                                    </>
+                                    }
+
                                 </Button>
                                 : ""
                             }
@@ -246,28 +303,45 @@ const CourseRegistrationPage = () => {
         setIsModalOpen(false); // Cập nhật state
     }, [isOpen])
 
-    const handleGetAllSubjectByYearAndSemester = async () => {
-        if (userInfo) {
-            let response = await getAllSubjectByYearAndSemester();
-            let responseRegistered = await getAllRegisteredSubjectByYearAndSemester();
-
-            if (response && response.data) {
-                setListSubject(response.data)
-            }
-            if (responseRegistered && responseRegistered.data) {
-                setListSubject2(responseRegistered.data)
-            }
-
-            let costs = 0;
-            let credit = 0;
-            responseRegistered.data.forEach(subject => {
-                costs += subject.cost;
-                credit += Number(subject.credits);
-            });
-
-            setCosts(costs)
-            setCredits(credit)
+    // Cập nhật trạng thái môn học đã đăng ký của sinh viên thành true
+    useEffect(() => {
+        if (status === 'PAID') {
+            handleUpdateStatusByYearAndSemester();
         }
+    }, [])
+
+    const handleUpdateStatusByYearAndSemester = async () => {
+        try {
+            let response = await updateStatusAPI();
+            if (response.code === 200)
+                console.log("Cập nhật trang thái môn học đã đăng ký thành công!")
+        } catch (error) {
+            console.log("Lỗi cập nhật môn học đã đăng ký:", error)
+        }
+    }
+
+    const handleGetAllSubjectByYearAndSemester = async () => {
+        // if (userInfo) {
+        let response = await getAllSubjectByYearAndSemester();
+        let responseRegistered = await getAllRegisteredSubjectByYearAndSemester();
+
+        if (response && response.data) {
+            setListSubject(response.data)
+        }
+        if (responseRegistered && responseRegistered.data) {
+            setListSubject2(responseRegistered.data)
+        }
+
+        let costs = 0;
+        let credit = 0;
+        responseRegistered.data.forEach(subject => {
+            costs += subject.cost;
+            credit += Number(subject.credits);
+        });
+
+        setCosts(costs)
+        setCredits(credit)
+        // }
     }
 
     return (

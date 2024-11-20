@@ -35,7 +35,7 @@ export default function MiniPanel({ name, code, credit, className = "", disableI
     const handlShift = async (shift) => {
         let list = [];
         clazzList.forEach(element => {
-            if (element.shift === shift) {
+            if (element.shift.id === shift) {
                 list.push(element);
             }
         });
@@ -71,7 +71,7 @@ export default function MiniPanel({ name, code, credit, className = "", disableI
                         <p >Mã môn: <span className="font-bold">{code}</span></p>
                         <p >Số tín chỉ: <span className="font-bold">{credit}</span></p>
                         <p >Ca học có thể đăng ký:</p>
-                        <p className="flex flex-wrap gap-3 mt-2">
+                        <div className="flex flex-wrap gap-3 mt-2">
                             <div>
                                 <Button
                                     type="button"
@@ -138,7 +138,7 @@ export default function MiniPanel({ name, code, credit, className = "", disableI
                                     Ca 6
                                 </Button>
                             </div>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>

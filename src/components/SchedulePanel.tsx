@@ -29,7 +29,7 @@ export default function SchedulePanel({ title, code, clazz, amount, shift, weekd
                         <p className="">Thời gian học thứ: {weekday}</p>
                         <p className="">Ngày bắt đầu: {date}</p>
                         <p className="">Ca học có thể đăng ký:</p>
-                        <p>
+                        <div>
                             <Button
                                 type="button"
                                 size="xs"
@@ -78,7 +78,7 @@ export default function SchedulePanel({ title, code, clazz, amount, shift, weekd
                             >
                                 Ca 6
                             </Button>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>

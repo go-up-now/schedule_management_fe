@@ -32,6 +32,7 @@ const SubjectDetailPage = (props) => {
                             className="p-1"
                             value={subject.code}
                             readOnly={true}
+                            disable={true}
                         />
                     </div>
                     <div className="w-full lg:w-6/12 p-1">
@@ -40,7 +41,7 @@ const SubjectDetailPage = (props) => {
                             id="name"
                             name="name"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             className="p-1"
@@ -54,7 +55,7 @@ const SubjectDetailPage = (props) => {
                             id="credits"
                             name="credits"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             className="p-1"
@@ -68,7 +69,7 @@ const SubjectDetailPage = (props) => {
                             id="clazzName"
                             name="clazzName"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             value={clazz.code}
@@ -82,7 +83,7 @@ const SubjectDetailPage = (props) => {
                             id="room"
                             name="room"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             className="p-1"
@@ -96,10 +97,10 @@ const SubjectDetailPage = (props) => {
                             id="shift"
                             name="shift"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
-                            value={clazz.shift}
+                            value={clazz.shift.id}
                             className="p-1"
                             readOnly={true}
                         />
@@ -110,7 +111,7 @@ const SubjectDetailPage = (props) => {
                             id="quantity"
                             name="quantity"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             value={clazz.studyIns ? clazz.studyIns.length + "/" + clazz.quantity : ""}
@@ -124,7 +125,7 @@ const SubjectDetailPage = (props) => {
                             id="semester"
                             name="semester"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             value={clazz.semester}
@@ -138,7 +139,7 @@ const SubjectDetailPage = (props) => {
                             id="block"
                             name="block"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             value={clazz.block}
@@ -153,7 +154,7 @@ const SubjectDetailPage = (props) => {
                             name="dayOfWeek"
                             width="w-full"
                             type="text"
-                            disable={false}
+                            disable={true}
                             disableLabel={false}
                             className="p-1"
                             value={clazz.dayOfWeek}
@@ -167,7 +168,7 @@ const SubjectDetailPage = (props) => {
                             id="startTime"
                             name="startTime"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             className="p-1"
@@ -181,7 +182,7 @@ const SubjectDetailPage = (props) => {
                             id="endTime"
                             name="endTime"
                             width="w-full"
-                            disable={false}
+                            disable={true}
                             type="text"
                             disableLabel={false}
                             className="p-1"

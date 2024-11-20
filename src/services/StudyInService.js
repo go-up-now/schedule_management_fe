@@ -8,7 +8,12 @@ const cancelRegistrationClazz = (subjectId) => {
     return axios.delete(`/api/study-in/subject/${subjectId}`);
 }
 
+const updateStatusAPI = () => {
+    return axios.put(`/api/study-in/update-status`);
+}
+
 export {
     registerClazz,
     cancelRegistrationClazz,
+    updateStatusAPI
 }
