@@ -62,8 +62,6 @@ const Modal: React.FC<ModalProps> = ({
           {buttonCancel}
           {buttonConfirm}
         </div>
-
-
       </div>
     </div>
   );

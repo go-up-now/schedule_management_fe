@@ -47,7 +47,7 @@ const CourseRegistrationPage = () => {
     const [listSubject, setListSubject] = useState([]);
     const [listSubject2, setListSubject2] = useState([]);
     const [clazz, setClazzz] = useState([]);
-    const [subject, setSubject] = useState<Subject[]>([]);
+    const [subject, setSubject] = useState<Subject>();
     const [subjectId, setSubjectId] = useState(null);
     const [costs, setCosts] = useState(0);
     const [credits, setCredits] = useState(0);
