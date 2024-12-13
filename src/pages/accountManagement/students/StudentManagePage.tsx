@@ -344,13 +344,6 @@ const StudentManagePage = () => {
         validationSchema: StudentSchema,
 
         onSubmit: async (values, { resetForm }) => {
-            // const formattedStudent: TypeStudent = {
-            //     ...values,
-            //     user: {
-            //         ...values.user,
-            //     },
-            // };
-
             // Tạo FormData
             const formData = new FormData();
 
@@ -422,7 +415,6 @@ const StudentManagePage = () => {
             };
             values.id === 0 ? openConfirm(action, "Bạn có chắc muốn thêm sinh viên này?")
                 : openConfirm(action, "Bạn có chắc muốn cập nhật sinh viên này?")
-            // toast.success("Đã thêm hoạt động mới")
         },
     });
 

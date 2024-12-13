@@ -4,6 +4,7 @@ import { formattedSelectedDate } from "../../utilss/convertDateAndString";
 
 const SubjectDetailPage = (props) => {
     const { clazz, subject } = props;
+
     return (
         <div className="w-full">
             <div className="w-full flex flex-wrap">

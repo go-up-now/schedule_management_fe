@@ -52,7 +52,6 @@ export const handleFileUpload = (file1, importExcelAPI, getAllObject,
             else if (response && response.code === 200) {
                 toast.success("Import excel thành công")
                 let responseAll = await getAllObject();
-                console.log("res", responseAll)
                 setListAPI(responseAll.data)
                 setList(responseAll.data)
 

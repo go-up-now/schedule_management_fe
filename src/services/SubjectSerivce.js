@@ -12,8 +12,13 @@ const getAllSubjectAPI = () => {
     return axios.get('/api/subjects')
 }
 
+const getAllSubjectsByEducationProgramAndStudyHistoryAPI = (privateMajorId) => {
+    return axios.get(`/api/subjects/education-programs/${privateMajorId}`)
+}
+
 export {
     getAllSubjectByYearAndSemester,
     getAllRegisteredSubjectByYearAndSemester,
-    getAllSubjectAPI
+    getAllSubjectAPI,
+    getAllSubjectsByEducationProgramAndStudyHistoryAPI
 }

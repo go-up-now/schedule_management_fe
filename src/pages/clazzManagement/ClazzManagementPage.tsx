@@ -340,7 +340,6 @@ const ClazzManagementPage = () => {
             setIsModalOpenUpdate(true);
         }
         else if (id === 'Xóa') {
-            console.log("delete: ", item)
             setIsClazz(item);
             setIsModalConfirmOpen(true);
         }

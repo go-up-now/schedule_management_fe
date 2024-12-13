@@ -52,7 +52,6 @@ const CourseRegistrationPage = () => {
     const [costs, setCosts] = useState(0);
     const [credits, setCredits] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [paymentStatus, setPaymentStatus] = useState(false);
     const [searchParams] = useSearchParams();
 
     const dispatch = useDispatch();
@@ -402,7 +401,7 @@ const CourseRegistrationPage = () => {
                 content={
                     <SubjectDetailPage
                         clazz={clazz}
-                        subject={subject}
+                        subject={subject ? subject : ''}
                     />
                 }
                 positionButton="center"
